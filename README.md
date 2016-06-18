@@ -1,5 +1,5 @@
-# DontStarveLuaJIT
-_LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
+# DontStarveLuaJIT for Windows
+_LuaJIT for DontStarve v181038 (compatible with DS, RoG, SW, not with DST)_
 
 Installation（安装）: 
 
