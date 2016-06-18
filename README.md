@@ -41,9 +41,9 @@ Save mods.lua.
 保存 mods.lua 文件。
 
 
-NOTICE: Some mods, for example, 'Craft Pot', are still using 'arg' in its code, which leads to crash when player activates related function. Here's an example for fixing it (take 'Craft Pot' as example).
+NOTICE: Some mods, for example, 'Smart Craft Pot', are still using 'arg' in its code, which leads to crash when player activates related function. Here's an example for fixing it (take 'Smart Craft Pot' as example).
 
-注意：有些MOD，例如'Craft Pot'，也使用了旧式的'arg'语法。当用户触发了含有这种语法的函数时，游戏将崩溃。以'Craft Pot'为例，我们也需要修复它：
+注意：有些MOD，例如'Smart Craft Pot'，也使用了旧式的'arg'语法。当用户触发了含有这种语法的函数时，游戏将崩溃。以'Smart Craft Pot'为例，我们也需要修复它：
 
  Open "Steam/SteamApps/common/dont_starve/mods/workshop-662872357/scripts/widgets/foodcrafting.lua" with an text editor. Locate the following lines (in fact, the file:line of crashing will be displayed in Don't Starve crash text):
 
