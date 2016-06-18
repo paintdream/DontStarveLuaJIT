@@ -1,0 +1,17 @@
+饥荒游戏默认采用了lua 5.1.4作为脚本引擎，在优化不到位的情况下（具体我就不吐槽一个constant expression反复地被脚本调用的问题了），如果游戏当前活动对象过多（可以通过Backspace查看左上角的awake得到），就会出现明显的卡顿现象。加之游戏本身是单线程的（DX和FMOD等库运行时自己创建的不算），所以满载只能跑满一个CPU核心，经常CPU占用只有20%，但是游戏已经卡得不能玩。
+
+LuaJIT是一个Just-in Time的lua引擎，由Mike开发。它可以将lua代码编译成CPU指令而不是虚拟机指令直接执行，在速度上比官方lua要快非常多（相差一到两个数量级）。具体的性能测试可到luajit官方网站（luajit.org）上看。
+
+这个MOD的作用就是使用LuaJIT替换掉原有的lua引擎，可以缓解因为对象数过多/MOD数过多引起了卡顿问题。但是由于饥荒主程序并没有导出lua函数，因此这个替换的过程是使用了特征码匹配的。
+特征码匹配没有办法保证它在所有版本的游戏中都可以正确运行，我仅仅在发贴时最近的steam正版Don't Starve v181038+ 上进行了测试。因此我需要收集一部分测试反馈。
+
+如果您想测试它的话，请确保您已经备份好所有的存档。如果程序出现了闪退或者崩溃，请将Steam\SteamApps\common\dont_starve\bin下的扩展名为.mdmp的文件贴上来。
+
+项目主页：github.com/paintdream/DontStarveLuaJIT 
+测试版本：github.com/paintdream/DontStarveLuaJIT/releases
+
+在测试之前，请认真阅读README.md
+
+
+====
+顺便说一句，如果想提升游戏的载入速度的话，请将饥荒安装在SSD硬盘上~
