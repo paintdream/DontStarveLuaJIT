@@ -1,7 +1,7 @@
 # DontStarveLuaJIT
 _LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
-* Installation（安装）: *
+Installation（安装）: 
 
 1. Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
 
