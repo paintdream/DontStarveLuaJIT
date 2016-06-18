@@ -311,6 +311,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lua51.def"
+				>
+			</File>
+			<File
 				RelativePath=".\src\lundump.c"
 				>
 			</File>

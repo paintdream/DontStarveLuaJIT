@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Sat Jun 18 15:15:15 2016
+/* at Sat Jun 18 17:49:21 2016
  */
 /* Compiler settings for .\DontStarveInjector.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

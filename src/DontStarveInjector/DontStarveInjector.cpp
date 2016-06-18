@@ -227,7 +227,7 @@ public:
 				if (address != NULL && (*q).validLength > 12) {
 					int maxCount = 0;
 					BYTE* best = NULL;
-					for (BYTE* p = (BYTE*)from + header->OptionalHeader.BaseOfCode; p < (BYTE*)from + header->OptionalHeader.SizeOfCode - INSTR_SIZE; p += PROC_ALIGN) {
+					for (BYTE* p = (BYTE*)from + header->OptionalHeader.BaseOfCode + 0x170000; p < (BYTE*)from + header->OptionalHeader.SizeOfCode - INSTR_SIZE; p += PROC_ALIGN) {
 						if (*(p - 1) != 0xcc && *(p - 1) != 0xc3) continue;
 						// find nearest
 						const BYTE* left = p;

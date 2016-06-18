@@ -82,7 +82,6 @@ lua_pushnumber
 lua_pushstring
 lua_pushthread
 lua_pushvalue
-lua_pushvfstring
 lua_rawequal
 lua_rawget
 lua_rawgeti
