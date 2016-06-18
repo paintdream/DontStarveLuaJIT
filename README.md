@@ -15,7 +15,7 @@ Installation（安装）:
 local runmodfn = function(fn,mod,modtype)
 	return (function(...)
 		if fn then
-			local arg = {...} --<<<< insert this line of code. 在这里加上这行代码
+			local arg = {...} --<<<<
 			local status, r = xpcall( function() return fn(unpack(arg)) end, debug.traceback)
 			if not status then
 				print("error calling "..modtype.." in mod "..ModInfoname(mod.modname)..": \n"..r)
@@ -28,6 +28,8 @@ local runmodfn = function(fn,mod,modtype)
 	end)
 end
 ```
+Add one line at --<<<< mark as above.
+在-<<<<标记处如上所示添加一行代码。
 
 Save mods.lua. 
 保存 mods.lua 文件。
