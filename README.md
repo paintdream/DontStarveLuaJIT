@@ -1,7 +1,7 @@
 # DontStarveLuaJIT
-LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)
+_LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
-Installation（安装）:
+* Installation（安装）: *
 
 1. Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
 
@@ -29,7 +29,9 @@ local runmodfn = function(fn,mod,modtype)
 end
 ```
 Add one line at --<<<< mark as above.
+
 在-<<<<标记处如上所示添加一行代码。
 
 Save mods.lua. 
+
 保存 mods.lua 文件。
