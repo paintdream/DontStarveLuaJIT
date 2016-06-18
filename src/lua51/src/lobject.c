@@ -169,7 +169,7 @@ __forceinline const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_l
 }
 
 
-const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
+__forceinline const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
   const char *msg;
   va_list argp;
   va_start(argp, fmt);
