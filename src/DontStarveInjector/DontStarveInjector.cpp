@@ -257,11 +257,11 @@ public:
 							best = p;
 						}
 					}
-
-					if (best != NULL && maxCount > INSTR_MATCH_COUNT) {
-						if (marked.count(best) != NULL) {
-							printf("ADDR %p Already registered.\n", best);
-						}
+					if (marked.count(best) != NULL) {
+						printf("ADDR %p Already registered.\n", best);
+					}
+					if (best != NULL && (maxCount > INSTR_MATCH_COUNT || (*q).name == "lua_getinfo")) {
+						
 						hookList.push_back(std::make_pair(best, address));
 						// Hook(best, address);
 						printf("\t[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode + 0x401000, maxCount, INSTR_SIZE, best, address, (*q).name.c_str());
