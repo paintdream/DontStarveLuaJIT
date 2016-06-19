@@ -44,6 +44,9 @@ Save mods.lua.
 
 保存 mods.lua 文件。
 
+Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
+使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
+
 
 The reason for modification: Official lua distribution 5.1.4+ and LuaJIT refined the concept of variant arguments so grammar sugar 'arg' was no longer supported. Lua programmers should use {...} instead. The developers of Don't Starve obeyed the rules except 'mods.lua' because '...' cannot be passed across closure boundary. So they simply wrote 'arg', which leads to runtime error in LuaJIT and advanced lua engines,  since 'arg' is reinterpreted as a global variable (but it's nil). Now we must declare 'arg' manually.
 
