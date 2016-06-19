@@ -1,15 +1,15 @@
 # DontStarveLuaJIT for Windows
-_LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
+	_LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
 	Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
-###  The first test version of DontStarveLuaJIT for Windows 
+####  The first test version of DontStarveLuaJIT for Windows 
 
-###  这是DontStarveLuaJIT For Windows 的第一个测试版本！
+####  这是DontStarveLuaJIT For Windows 的第一个测试版本！
 
-###  PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. 
+####  PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. 
 
-###  在启用这个补丁之前，请务必备份你的所有存档。
+####  在启用这个补丁之前，请务必备份你的所有存档。
 
 
 ##Installation（安装）: 
@@ -82,7 +82,7 @@ end
 
  	Open "Steam/SteamApps/common/dont_starve/mods/workshop-662872357/scripts/widgets/foodcrafting.lua" with
  	an text editor. Locate the following lines (in fact, the file:line of crashing will be displayed in Don't
- 	Starve crash text):
+ 	Starve crash screen):
 
 	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。
 	定位到如下代码行（实际上，崩溃的文件：行号在崩溃的时候会显示在Don't Starve 的崩溃界面上，很容易找）：
