@@ -1,7 +1,15 @@
 # DontStarveLuaJIT for Windows
 _LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
-Tested revisions:  v181038-v181319 WIN32_STEAM
+Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
+
+*** The first test version of DontStarveLuaJIT. On Windows ***
+
+*** 这是DontStarveLuaJIT For Windows 的第一个测试版本！*** 
+
+*** PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. *** 
+
+*** 在启用这个补丁之前，请务必备份你的所有存档。*** 
 
 Installation（安装）: 
 
