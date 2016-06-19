@@ -84,8 +84,8 @@ end
  	an text editor. Locate the following lines (in fact, the file:line of crashing will be displayed in Don't
  	Starve crash screen):
 
-	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。
-	定位到如下代码行（实际上，崩溃的文件：行号在崩溃的时候会显示在Don't Starve 的崩溃界面上，很容易找）：
+	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/mods/workshop-662872357/scripts/widgets/foodcrafting.lua”
+	文件，定位到如下代码行（实际上，崩溃的文件：行号在崩溃的时候会显示在Don't Starve 的崩溃界面上，很容易找）：
 
 ```lua
 function FoodCrafting:_GetContainerIngredients(...)
