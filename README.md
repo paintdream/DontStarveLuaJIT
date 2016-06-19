@@ -3,7 +3,7 @@ _LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
 Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
-###  The first test version of DontStarveLuaJIT. On Windows 
+###  The first test version of DontStarveLuaJIT for Windows 
 
 ###  这是DontStarveLuaJIT For Windows 的第一个测试版本！
 
