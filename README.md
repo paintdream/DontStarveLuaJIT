@@ -15,9 +15,11 @@ Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 ##Installation（安装）: 
 
 1	Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
+
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"Steam/SteamApps/common/dont_starve/bin/"
 
 2	Open "Steam/SteamApps/common/dont_starve/data/scripts/mods.lua" with an text editor. Locate the following lines:
+
 	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。定位到如下代码行：
 
 ```lua
@@ -45,9 +47,13 @@ end
 
 	保存 mods.lua 文件。
 
-3	Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
+3	Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. 
+	
+	Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
 
-	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
+	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。
+	
+	将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
 
 ---------------------------------------------------
 
