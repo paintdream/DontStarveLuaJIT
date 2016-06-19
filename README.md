@@ -45,6 +45,7 @@ Save mods.lua.
 保存 mods.lua 文件。
 
 Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
+
 使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
 
 
