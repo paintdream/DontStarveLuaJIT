@@ -14,11 +14,11 @@ Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
 ##Installation（安装）: 
 
-1. Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
-复制"DontStarveLuaJIT/bin/"目录下的所有文件至"Steam/SteamApps/common/dont_starve/bin/"
+1	Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
+	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"Steam/SteamApps/common/dont_starve/bin/"
 
-2. Open "Steam/SteamApps/common/dont_starve/data/scripts/mods.lua" with an text editor. Locate the following lines:
-使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。定位到如下代码行：
+2	Open "Steam/SteamApps/common/dont_starve/data/scripts/mods.lua" with an text editor. Locate the following lines:
+	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。定位到如下代码行：
 
 ```lua
 local runmodfn = function(fn,mod,modtype)
@@ -37,19 +37,20 @@ local runmodfn = function(fn,mod,modtype)
 	end)
 end
 ```
-Add one line at --<<<< mark as above.
+	Add one line at --<<<< mark as above.
 
-在-<<<<标记处如上所示添加一行代码。
+	在-<<<<标记处如上所示添加一行代码。
 
-Save mods.lua. 
+	Save mods.lua. 
 
-保存 mods.lua 文件。
+	保存 mods.lua 文件。
 
-3. Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
+3	Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
 
-使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
+	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
 
 ---------------------------------------------------
+
 The reason for modification: Official lua distribution 5.1.4+ and LuaJIT refined the concept of variant arguments so grammar sugar 'arg' was no longer supported. Lua programmers should use {...} instead. The developers of Don't Starve obeyed the rules except 'mods.lua' because '...' cannot be passed across closure boundary. So they simply wrote 'arg', which leads to runtime error in LuaJIT and advanced lua engines,  since 'arg' is reinterpreted as a global variable (but it's nil). Now we must declare 'arg' manually.
 
 这样修改的原因是：Lua官方所发布的新版lua以及LuaJIT修正了不定长参数的概念，现在lua不再支持'arg'这个语法糖来表示不定参数的列表。Lua程序员如果需要，可以显式地使用{...}来代替它。Don't Starve的开发者在绝大多数情况下都遵守了这个变动。然而，在mods.lua中，他们发现'...'表示的不定参数不能穿越闭包边界，因此使用了旧的用法。现在我们需要手动定义'arg'，以保证程序可以正确执行。
