@@ -80,9 +80,12 @@ end
 	注意：有些MOD，例如'Smart Craft Pot'，也使用了旧式的'arg'语法。当用户触发了含有这种语法的函数时，
 	游戏将崩溃。以'Smart Craft Pot'为例，我们也需要修复它：
 
- 	Open "Steam/SteamApps/common/dont_starve/mods/workshop-662872357/scripts/widgets/foodcrafting.lua" with an text editor. Locate the following lines (in fact, the file:line of crashing will be displayed in Don't Starve crash text):
+ 	Open "Steam/SteamApps/common/dont_starve/mods/workshop-662872357/scripts/widgets/foodcrafting.lua" with
+ 	an text editor. Locate the following lines (in fact, the file:line of crashing will be displayed in Don't
+ 	Starve crash text):
 
-	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。定位到如下代码行（实际上，崩溃的文件：行号在崩溃的时候会显示在Don't Starve 的崩溃界面上，很容易找）：
+	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。
+	定位到如下代码行（实际上，崩溃的文件：行号在崩溃的时候会显示在Don't Starve 的崩溃界面上，很容易找）：
 
 ```lua
 function FoodCrafting:_GetContainerIngredients(...)
@@ -107,6 +110,9 @@ end
 
 ##Build（生成）: 
 
-	The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ Build Prompt and run msvcbuild.bat.
+	The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate 
+	binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ 
+	Build Prompt and run msvcbuild.bat.
 
-	为确保与饥荒主程序的二进制兼容性，解决方案中的lua51必须使用MSVC9（即VS2008）来编译。如果您要自行编译luajit，请在Visual C++的控制台中运行luajit目录下的msvcbuild.bat。
+	为确保与饥荒主程序的二进制兼容性，解决方案中的lua51必须使用MSVC9（即VS2008）来编译。
+	如果您要自行编译luajit，请在Visual C++的控制台中运行luajit目录下的msvcbuild.bat。
