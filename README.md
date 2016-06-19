@@ -3,20 +3,19 @@ _LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
 
 Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
-##  The first test version of DontStarveLuaJIT. On Windows ## 
+###  The first test version of DontStarveLuaJIT. On Windows 
 
-##  这是DontStarveLuaJIT For Windows 的第一个测试版本！## 
+###  这是DontStarveLuaJIT For Windows 的第一个测试版本！
 
-##  PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. ## 
+###  PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. 
 
-##  在启用这个补丁之前，请务必备份你的所有存档。## 
+###  在启用这个补丁之前，请务必备份你的所有存档。
 
-Installation（安装）: 
+##Installation（安装）: 
 
 1. Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
 
 复制"DontStarveLuaJIT/bin/"目录下的所有文件至"Steam/SteamApps/common/dont_starve/bin/"
-
 2. Offical lua distribution 5.1.4+ and LuaJIT refine the concept of variant arguments and 'arg' is no longer supported. Lua programmers should use {...} instead. The developers of Don't Starve obey the rules except 'mods.lua' because '...' cannot be passed across closure boundary. So they simply write 'arg', which leads to runtime error in LuaJIT and advanced lua engines because 'arg' is reinterpreted as a global variable (but it's nil). Now we must declare 'arg' manually.
 
 Lua官方所发布的新版lua以及LuaJIT修正了不定长参数的概念，现在lua不再支持'arg'这个语法糖来表示不定参数的列表。Lua程序员如果需要，可以显式地使用{...}来使用它。Don't Starve的开发者在绝大多数情况下都遵守了这个变动。然而，在mods.lua中，他们发现'...'表示的不定参数不能穿越闭包边界，因此使用了旧的用法。现在我们需要手动定义'arg'，以保证程序可以正确执行。
