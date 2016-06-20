@@ -43,7 +43,6 @@ lua_createtable
 lua_dump
 lua_error
 lua_gc
-lua_getallocf
 lua_getfenv
 lua_getfield
 lua_getinfo
