@@ -93,7 +93,7 @@ void DumpHex(const BYTE* p, size_t size) {
 
 class Matcher {
 public:
-	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 50, MAX_SINGLE_INSTR_LENGTH = 24 };
+	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 32, MAX_SINGLE_INSTR_LENGTH = 24 };
 	struct Entry {
 		bool operator < (const Entry& rhs) const {
 			return instr < rhs.instr;
@@ -238,33 +238,36 @@ public:
 						continue;
 						}*/
 
+						/*
 						int count = 0;
 						for (int j = 0; j < MAX_SINGLE_INSTR_LENGTH; j++) {
 							if (entry.lengthHist[j] == (*q).lengthHist[j]) {
 								count++;
 							}
-						}
+						}*/
 
 						/*
 						for (int i = 0; i < INSTR_SIZE; i++) {
 						count += (entry.instr[i] - (*q).instr[i]) == 0 ? 1 : 0;
 						}*/
 
-						count = CommonLength(entry.instr, (*q).instr);
+						int count = CommonLength(entry.instr, (*q).instr);
 
 						if (count > maxCount) {
 							maxCount = count;
 							best = p;
 						}
 					}
-					if (marked.count(best) != NULL) {
-						printf("ADDR %p Already registered.\n", best);
-					}
-					if (best != NULL && (maxCount > INSTR_MATCH_COUNT || (*q).name == "lua_getinfo")) {
-						
-						hookList.push_back(std::make_pair(best, address));
+
+
+					if (best != NULL && maxCount > INSTR_MATCH_COUNT) {
+						if (marked.count(best) != NULL) {
+							printf("ADDR %p Already registered. Please report this bug to me.\n", best);
+						} else {
+							hookList.push_back(std::make_pair(best, address));
+						}
 						// Hook(best, address);
-						printf("\t[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode + 0x401000, maxCount, INSTR_SIZE, best, address, (*q).name.c_str());
+						printf("[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode + 0x401000, maxCount, INSTR_SIZE, best, address, (*q).name.c_str());
 
 						addrMax = best > addrMax ? best : addrMax;
 						addrMin = best < addrMin ? best : addrMin;
@@ -342,9 +345,11 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			TCHAR filePath[MAX_PATH];
 			::GetModuleFileName(NULL, filePath, MAX_PATH);
 			::AllocConsole();
-			freopen("CONOUT$", "w+t", stdout);
-			freopen("CONIN$", "r+t", stdin);
+			FILE* fout = freopen("CONOUT$", "w+t", stdout);
+			FILE* fin = freopen("CONIN$", "r+t", stdin);
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.exe")));
+			fclose(fout);
+			fclose(fin);
 			::FreeConsole();
 		}
 	}
