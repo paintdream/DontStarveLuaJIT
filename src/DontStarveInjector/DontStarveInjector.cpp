@@ -358,10 +358,10 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.exe")));
-			system("pause");
-			// fclose(fout);
-			// fclose(fin);
-			// ::FreeConsole();
+			// system("pause");
+			fclose(fout);
+			fclose(fin);
+			::FreeConsole();
 		}
 	}
 
