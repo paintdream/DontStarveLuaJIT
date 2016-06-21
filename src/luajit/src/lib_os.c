@@ -39,6 +39,8 @@
 
 LJLIB_CF(os_execute)
 {
+	return 0;
+	/*
 #if LJ_NO_SYSTEM
 #if LJ_52
   errno = ENOSYS;
@@ -59,6 +61,7 @@ LJLIB_CF(os_execute)
 #endif
   return 1;
 #endif
+  */
 }
 
 LJLIB_CF(os_remove)
