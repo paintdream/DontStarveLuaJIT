@@ -115,6 +115,7 @@ public:
 		memset(entry.lengthHist, 0, sizeof(entry.lengthHist));
 		xde_instr instr;
 		size_t validLength = 0;
+		bool edge = false;
 		while (target < entry.instr + INSTR_SIZE) {
 			xde_disasm((BYTE*)c, &instr);
 			int len = instr.len;
@@ -129,10 +130,11 @@ public:
 
 			c += len;
 			target += len;
-			validLength += len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len;
+			if (!edge)
+				validLength += len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len;
 			entry.lengthHist[len]++;
 			if (*c == 0xCC)
-				break;
+				edge = true;
 		}
 
 		entry.validLength = validLength;
@@ -181,20 +183,20 @@ public:
 		::VirtualProtect(from, 5, oldProtect, &oldProtect);
 	}
 
-	static int CommonLength(const BYTE* x, const BYTE* y) {
+	static int CommonLength(const BYTE* x, int xlen, const BYTE* y, int ylen) {
 		int opt[INSTR_SIZE + 1][INSTR_SIZE + 1];
 		memset(opt, 0, sizeof(opt));
 
-		for (int i = INSTR_SIZE - 1; i >= 0; i--) {
-			for (int j = INSTR_SIZE - 1; j >= 0; j--) {
-				if (x[i] == y[j])
-					opt[i][j] = opt[i + 1][j + 1] + 1;
+		for (int i = 1; i <= xlen; i++) {
+			for (int j = 1; j <= ylen; j++) {
+				if (x[i - 1] == y[j - 1])
+					opt[i][j] = opt[i - 1][j - 1] + 1;
 				else
-					opt[i][j] = opt[i + 1][j] > opt[i][j + 1] ? opt[i + 1][j] : opt[i][j + 1];
+					opt[i][j] = opt[i - 1][j] > opt[i][j - 1] ? opt[i - 1][j] : opt[i][j - 1];
 			}
 		}
 
-		return opt[0][0];
+		return opt[xlen][ylen];
 	}
 
 	void Redirect(HMODULE from, HMODULE to) {
@@ -226,6 +228,7 @@ public:
 				BYTE* address = mapAddress[(*q).name];
 				if (address != NULL && (*q).validLength > 12) {
 					int maxCount = 0;
+					int maxTotalCount = 0;
 					BYTE* best = NULL;
 					for (BYTE* p = (BYTE*)from + header->OptionalHeader.BaseOfCode + 0x170000; p < (BYTE*)from + header->OptionalHeader.SizeOfCode - INSTR_SIZE; p += PROC_ALIGN) {
 						if (*(p - 1) != 0xcc && *(p - 1) != 0xc3) continue;
@@ -251,29 +254,36 @@ public:
 						count += (entry.instr[i] - (*q).instr[i]) == 0 ? 1 : 0;
 						}*/
 
-						int count = CommonLength(entry.instr, (*q).instr);
+						int count = CommonLength(entry.instr, entry.validLength, (*q).instr, (*q).validLength);
 
 						if (count > maxCount) {
 							maxCount = count;
+							maxTotalCount = CommonLength(entry.instr, INSTR_SIZE, (*q).instr, INSTR_SIZE);
 							best = p;
+						} else if (count == maxCount) {
+							int total = CommonLength(entry.instr, INSTR_SIZE, (*q).instr, INSTR_SIZE);
+							if (total > maxTotalCount) {
+								best = p;
+								maxTotalCount = total;
+							}
 						}
 					}
 
 
-					if (best != NULL && maxCount > INSTR_MATCH_COUNT) {
+					if (best != NULL && maxTotalCount > INSTR_MATCH_COUNT) {
 						if (marked.count(best) != NULL) {
 							printf("ADDR %p Already registered. Please report this bug to me.\n", best);
 						} else {
 							hookList.push_back(std::make_pair(best, address));
 						}
 						// Hook(best, address);
-						printf("[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode + 0x401000, maxCount, INSTR_SIZE, best, address, (*q).name.c_str());
+						printf("[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode, maxTotalCount, INSTR_SIZE, best, address, (*q).name.c_str());
 
 						addrMax = best > addrMax ? best : addrMax;
 						addrMin = best < addrMin ? best : addrMin;
 
 					} else {
-						printf("[%p] [%d/%d] - Missing function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode + 0x401000, maxCount, INSTR_SIZE, best, address, (*q).name.c_str());
+						printf("[%p] [%d/%d] - Missing function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode, maxTotalCount, INSTR_SIZE, best, address, (*q).name.c_str());
 						// Dump
 						/*
 						printf("Template: \n");
@@ -286,10 +296,10 @@ public:
 				} else {
 					printf("Entry: %s Missing!\n", (*q).name.c_str());
 				}
+			}
 
-				for (std::vector<std::pair<BYTE*, BYTE*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
-					Hook((*x).first, (*x).second);
-				}
+			for (std::vector<std::pair<BYTE*, BYTE*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
+				Hook((*x).first, (*x).second);
 			}
 
 			printf("VALID RANGE: [%p] - [%p]\n", addrMin - ((BYTE*)from + header->OptionalHeader.BaseOfCode), addrMax - ((BYTE*)from + header->OptionalHeader.BaseOfCode));
@@ -348,9 +358,10 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.exe")));
-			fclose(fout);
-			fclose(fin);
-			::FreeConsole();
+			system("pause");
+			// fclose(fout);
+			// fclose(fin);
+			// ::FreeConsole();
 		}
 	}
 
