@@ -1,5 +1,5 @@
 # DontStarveLuaJIT for Windows
-	_LuaJIT for DontStarve (compatible with DS, RoG, SW, not with DST)_
+	_LuaJIT for DontStarve (compatible with DS, RoG, SW, DST)_
 
 	Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
@@ -15,14 +15,14 @@
 ##Installation（安装）: 
 
 ##### Step 1:
-	Copy all files from "DontStarveLuaJIT/bin/" to "Steam/SteamApps/common/dont_starve/bin/"
+	Copy all files from "DontStarveLuaJIT/bin/" to "[Your Don't Starve Directory]/bin/"
 
-	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"Steam/SteamApps/common/dont_starve/bin/"
+	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
 
 ##### Step 2:	
-	Open "Steam/SteamApps/common/dont_starve/data/scripts/mods.lua" with an text editor. Locate the following lines:
+	Open "[Your Don't Starve Directory]/data/scripts/mods.lua" with an text editor. Locate the following lines:
 
-	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/mods.lua”文件。定位到如下代码行：
+	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/mods.lua”文件。定位到如下代码行：
 
 ```lua
 local runmodfn = function(fn,mod,modtype)
@@ -48,13 +48,45 @@ end
 	Save mods.lua. 
 
 	保存 mods.lua 文件。
+	
+	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor. Locate the following lines:
 
+	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。定位到如下代码行：	
+	
+```lua	
+-- return only values found in all arrays
+function ArrayIntersection(...)
+	local ret = {}
+    local arg = {...}
+	for i,val in ipairs(arg[1]) do
+		local good = true
+		for i=2,#arg do
+			if not table.contains(arg[i], val) then
+				good = false
+				break
+			end
+		end
+		if good then
+			table.insert(ret, val)
+		end
+	end
+	return ret
+end	
+```
+	Add one line at --<<<< mark as above.
+
+	在-<<<<标记处如上所示添加一行代码。
+
+	Save util.lua. 
+
+	保存 util.lua 文件。
+	
 ##### Step 3:	
-	Open "Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua" with an text editor. 
+	Open "[Your Don't Starve Directory]/data/scripts/modutil.lua" with an text editor. 
 	
 	Replace all 'arg = {...}' with 'local arg = {...}' (quote mark not included)
 
-	使用文本编辑器打开“Steam/SteamApps/common/dont_starve/data/scripts/modutil.lua”文件。
+	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/modutil.lua”文件。
 	
 	将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
 
