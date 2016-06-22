@@ -1,5 +1,5 @@
 # DontStarveLuaJIT for Windows
-	_LuaJIT for DontStarve (compatible with DS, RoG, SW, DST)_
+	LuaJIT for DontStarve (compatible with DS, RoG, SW, DST)
 
 	Tested revisions（已测试版本）:  v181038-v181319 WIN32_STEAM
 
@@ -49,9 +49,12 @@ end
 
 	保存 mods.lua 文件。
 	
-	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor. Locate the following lines:
+	
+	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
+	Locate the following lines:
 
-	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。定位到如下代码行：	
+	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。
+	定位到如下代码行：	
 	
 ```lua	
 -- return only values found in all arrays
@@ -77,6 +80,20 @@ end
 
 	在-<<<<标记处如上所示添加一行代码。
 
+```lua	
+function RunInSandboxSafe(untrusted_code, error_handler)
+	error_handler = error_handler or function (str) print("ERROR: " .. str) end --<<<<
+	if untrusted_code:byte(1) == 27 then return nil, "binary bytecode prohibited" end
+	local untrusted_function, message = loadstring(untrusted_code)
+	if not untrusted_function then return nil, message end
+	setfenv(untrusted_function, {} )
+	return xpcall(untrusted_function, error_handler )
+end
+```
+	Add one line at --<<<< mark as above.
+
+	在-<<<<标记处如上所示添加一行代码。
+	
 	Save util.lua. 
 
 	保存 util.lua 文件。
@@ -89,6 +106,7 @@ end
 	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/modutil.lua”文件。
 	
 	将所有的'arg = {...}'替换为'local arg = {...}' （不包含引号）
+
 
 ##### BTW...
 
