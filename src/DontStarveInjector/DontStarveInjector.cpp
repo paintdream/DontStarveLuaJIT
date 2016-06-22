@@ -91,6 +91,7 @@ void DumpHex(const BYTE* p, size_t size) {
 	}
 }
 
+static bool g_isDST = false;
 class Matcher {
 public:
 	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 24, MAX_SINGLE_INSTR_LENGTH = 24 };
@@ -171,7 +172,7 @@ public:
 
 			for (size_t i = 0; i < expt->NumberOfNames; i++) {
 				const char* name = (const char*)instance + (long)names[i];
-				if (memcmp(name, "lua_", 4) == 0 || memcmp(name, "luaopen_", 8) == 0) {
+				if ((memcmp(name, "lua_", 4) == 0 || memcmp(name, "luaopen_", 8) == 0) || (g_isDST && memcmp(name, "luaL_", 5) == 0)) {
 					DWORD index = ordinals[i];
 					BYTE* c = (BYTE*)instance + addresses[index];
 					//	printf("[%p] FIND %s - %p\n", instance, name, c);
@@ -401,10 +402,10 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
 
-			bool isDST = CheckDST();
-			printf("Application: %s\n", isDST ? "Don't Starve Together" : "Don't Starve");
-			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
-			// system("pause");
+			g_isDST = CheckDST();
+			printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
+			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
+			//system("pause");
 			fclose(fout);
 			fclose(fin);
 			::FreeConsole();
