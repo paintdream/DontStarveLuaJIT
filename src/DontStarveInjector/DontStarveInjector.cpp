@@ -93,7 +93,7 @@ void DumpHex(const BYTE* p, size_t size) {
 
 class Matcher {
 public:
-	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 32, MAX_SINGLE_INSTR_LENGTH = 24 };
+	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 24, MAX_SINGLE_INSTR_LENGTH = 24 };
 	struct Entry {
 		bool operator < (const Entry& rhs) const {
 			return instr < rhs.instr;
@@ -104,6 +104,7 @@ public:
 		size_t validLength;
 		std::string name;
 		BYTE* address;
+		std::list<std::pair<PVOID, std::string> > stringList;
 	};
 
 	static Entry ParseEntry(const std::string& name, const BYTE* c) {
@@ -122,8 +123,25 @@ public:
 			if (len == 0)
 				break;
 
-			if (instr.addrsize == 4 || instr.datasize == 4) {
-				*target = *c;
+			if (instr.opcode == 0x68 || instr.addrsize == 4) {
+				// read memory data
+				PVOID addr = instr.opcode == 0x68 ? *(PVOID*)(c + 1) : (PVOID)instr.addr_l[0];
+				char buf[16];
+				memset(buf, 0, sizeof(buf));
+				if (addr != NULL && ::ReadProcessMemory(::GetCurrentProcess(), addr, buf, 4, NULL)) {
+					entry.stringList.push_back(std::make_pair(addr, std::string(buf)));
+				}
+
+				BYTE temp[16];
+				if (instr.opcode == 0x68) {
+					memcpy(temp, c, instr.len);
+					*(PVOID*)(temp + 1) = *(PVOID*)buf;
+				} else {
+				instr.addr_l[0] = *(long*)buf;
+
+				xde_asm(temp, &instr);
+				}
+				memcpy(target, temp, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
 			} else {
 				memcpy(target, c, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
 			}
@@ -133,8 +151,10 @@ public:
 			if (!edge)
 				validLength += len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len;
 			entry.lengthHist[len]++;
-			if (*c == 0xCC)
+
+			if (*c == 0xCC) {
 				edge = true;
+			}
 		}
 
 		entry.validLength = validLength;
@@ -151,7 +171,7 @@ public:
 
 			for (size_t i = 0; i < expt->NumberOfNames; i++) {
 				const char* name = (const char*)instance + (long)names[i];
-				if (memcmp(name, "lua_", 4) == 0 || memcmp(name, "luaopen_", 8) == 0) {
+				if (memcmp(name, "lua", 3) == 0) {
 					DWORD index = ordinals[i];
 					BYTE* c = (BYTE*)instance + addresses[index];
 					//	printf("[%p] FIND %s - %p\n", instance, name, c);
@@ -170,6 +190,10 @@ public:
 		GetEntries(instance, entries);
 		for (std::set<Entry>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
 			printf("[%p] FINISH %s - %p\n", instance, (*it).name.c_str(), (*it).address);
+			
+			for (std::list<std::pair<PVOID, std::string> >::const_iterator p = (*it).stringList.begin(); p != (*it).stringList.end(); ++p) {
+				printf("Str(%p): %s\n", (*p).first, (*p).second.c_str());
+			}
 		}
 	}
 
@@ -209,6 +233,7 @@ public:
 		std::map<std::string, BYTE*> mapAddress;
 		for (std::set<Entry>::iterator it = toEntries.begin(); it != toEntries.end(); ++it) {
 			mapAddress[(*it).name] = (*it).address;
+			// printf("Function Refs (%s)\n", (*it).name.c_str());
 		}
 
 		printf("Start detection\n");
@@ -262,7 +287,7 @@ public:
 							best = p;
 						} else if (count == maxCount) {
 							int total = CommonLength(entry.instr, INSTR_SIZE, (*q).instr, INSTR_SIZE);
-							if (total > maxTotalCount) {
+							if (total >= maxTotalCount) {
 								best = p;
 								maxTotalCount = total;
 							}
@@ -274,6 +299,7 @@ public:
 						if (marked.count(best) != NULL) {
 							printf("ADDR %p Already registered. Please report this bug to me.\n", best);
 						} else {
+						//	Hook(best, address);
 							hookList.push_back(std::make_pair(best, address));
 						}
 						// Hook(best, address);
@@ -357,7 +383,7 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			::AllocConsole();
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
-			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.exe")));
+			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.dll")));
 			// system("pause");
 			fclose(fout);
 			fclose(fin);
