@@ -171,7 +171,7 @@ public:
 
 			for (size_t i = 0; i < expt->NumberOfNames; i++) {
 				const char* name = (const char*)instance + (long)names[i];
-				if (memcmp(name, "lua", 3) == 0) {
+				if (memcmp(name, "lua_", 4) == 0 || memcmp(name, "luaopen_", 8) == 0) {
 					DWORD index = ordinals[i];
 					BYTE* c = (BYTE*)instance + addresses[index];
 					//	printf("[%p] FIND %s - %p\n", instance, name, c);
