@@ -49,9 +49,12 @@ end
 
 	保存 mods.lua 文件。
 	
-	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor. Locate the following lines:
+	
+	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
+	Locate the following lines:
 
-	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。定位到如下代码行：	
+	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。
+	定位到如下代码行：	
 	
 ```lua	
 -- return only values found in all arrays
