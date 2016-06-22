@@ -188,13 +188,14 @@ public:
 
 	Matcher(HMODULE instance) {
 		GetEntries(instance, entries);
+		/*
 		for (std::set<Entry>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
 			printf("[%p] FINISH %s - %p\n", instance, (*it).name.c_str(), (*it).address);
 			
 			for (std::list<std::pair<PVOID, std::string> >::const_iterator p = (*it).stringList.begin(); p != (*it).stringList.end(); ++p) {
 				printf("Str(%p): %s\n", (*p).first, (*p).second.c_str());
 			}
-		}
+		}*/
 	}
 
 	static void Hook(BYTE* from, BYTE* to) {
@@ -225,9 +226,9 @@ public:
 
 	void Redirect(HMODULE from, HMODULE to) {
 		std::set<Entry> toEntries, fromEntries;
-		printf("Get from entry\n");
+		// printf("Get from entry\n");
 		GetEntries(from, fromEntries);
-		printf("Get to entry\n");
+		// printf("Get to entry\n");
 		GetEntries(to, toEntries);
 
 		std::map<std::string, BYTE*> mapAddress;
@@ -360,6 +361,22 @@ typedef HRESULT(WINAPI *PFNDirectInput8Create)(HINSTANCE hinst,
 
 static PFNDirectInput8Create pfnDirectInput8Create = NULL;
 
+bool CheckDST() {
+	ULONG ulSize;
+	HMODULE hModCaller = ::GetModuleHandle(NULL);
+	PIMAGE_IMPORT_DESCRIPTOR pImportDesc = (PIMAGE_IMPORT_DESCRIPTOR)::ImageDirectoryEntryToData(hModCaller, TRUE, IMAGE_DIRECTORY_ENTRY_IMPORT, &ulSize);
+
+	while(pImportDesc->Name != 0) {
+		LPSTR pszMod = (LPSTR)((DWORD)hModCaller + pImportDesc->Name);
+		if(lstrcmpiA(pszMod, "SHLWAPI.DLL") == 0)
+			return true;
+
+		pImportDesc++;
+	}
+
+	return false;
+}
+
 BOOL CDontStarveInjectorApp::InitInstance() {
 #ifdef _MERGE_PROXYSTUB
 	hProxyDll = m_hInstance;
@@ -383,7 +400,10 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			::AllocConsole();
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
-			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), ::LoadLibrary(_T("lua51.dll")));
+
+			bool isDST = CheckDST();
+			printf("Application: %s\n", isDST ? "Don't Starve Together" : "Don't Starve");
+			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
 			// system("pause");
 			fclose(fout);
 			fclose(fin);
