@@ -401,8 +401,8 @@ LJLIB_CF(io_open)
   GCstr *s = NULL;
   const char *mode = NULL;
   IOFileUD *iof = NULL;
-  if (strstr(fname, "..") != NULL)
-	  return 0;
+  //if (strstr(fname, "..") != NULL)
+	//  return 0;
   s = lj_lib_optstr(L, 2);
   mode = s ? strdata(s) : "r";
   iof = io_file_new(L);

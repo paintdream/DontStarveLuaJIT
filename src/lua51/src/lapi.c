@@ -489,11 +489,7 @@ LUA_API void lua_pushstring (lua_State *L, const char *s) {
   if (s == NULL)
     lua_pushnil_(L);
   else {
-#ifndef DST
     lua_pushlstring_(L, s, strlen(s));
-#else
-    lua_pushlstring(L, s, strlen(s));
-#endif
 
   }
 }

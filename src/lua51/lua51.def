@@ -55,7 +55,6 @@ lua_insert
 lua_iscfunction
 lua_isnumber
 lua_isstring
-lua_isuserdata
 lua_lessthan
 lua_load
 lua_newstate
