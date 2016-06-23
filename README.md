@@ -60,7 +60,7 @@ end
 -- return only values found in all arrays
 function ArrayIntersection(...)
 	local ret = {}
-    local arg = {...}
+    local arg = {...} --<<<<
 	for i,val in ipairs(arg[1]) do
 		local good = true
 		for i=2,#arg do
