@@ -29,3 +29,7 @@
 
 	为确保与饥荒主程序的二进制兼容性，解决方案中的lua51必须使用MSVC9（即VS2008）来编译。
 	如果您要自行编译luajit，请在Visual C++的控制台中运行luajit目录下的msvcbuild.bat。
+	
+	lua51.dll for DST is build from 'lua51' project with predefined macro 'DST'.
+	
+	向工程lua51添加前置宏定义'DST'可以编译出针对DST版本的lua51.dll。
