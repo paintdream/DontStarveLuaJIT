@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\IPHLPAPI.DLL"
+				OutputFile="$(OutDir)\WINMM.DLL"
 				LinkIncremental="2"
 				ModuleDefinitionFile="DSTServerInjector.def"
 				GenerateDebugInformation="true"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\IPHLPAPI.DLL"
+				OutputFile="$(OutDir)\WINMM.DLL"
 				LinkIncremental="1"
 				ModuleDefinitionFile="DSTServerInjector.def"
 				GenerateDebugInformation="true"
