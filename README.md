@@ -11,6 +11,15 @@
 
 ####  在启用这个补丁之前，请务必备份你的所有存档。
 
+####  SOME OLD SAVES CANNOT BE LOADED WITH THIS PATCH APPLIED DUE TO EXTRA
+####  DATA WRITTEN BY SOME MODS USING ENGINE-RELATED FUNCTIONS (SUCH AS lua_dump).
+####  THESE DATA CANNOT BE RECOGNIZED BY LUAJIT.
+
+####  一些在这个补丁使用之前创建的存档可能无法被正确加载。
+####  这是由于一些MODs使用了引擎相关的函数向存档内写入了数据。
+####  这些数据不能被LUAJIT正确解析。
+
+####  在启用这个补丁之前，请务必备份你的所有存档。
 
 ##Installation（安装）: 
 
