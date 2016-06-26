@@ -398,17 +398,20 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 
 			TCHAR filePath[MAX_PATH];
 			::GetModuleFileName(NULL, filePath, MAX_PATH);
+			/*
 			::AllocConsole();
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
+			*/
 
 			g_isDST = CheckDST();
 			printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
 			//system("pause");
+			/*
 			fclose(fout);
 			fclose(fin);
-			::FreeConsole();
+			::FreeConsole();*/
 		}
 	}
 
