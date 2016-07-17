@@ -56,7 +56,45 @@ end
 
 	保存 util.lua 文件。
 
-##Build（生成）: 
+	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
+	Locate the following lines (Search 'Generate RPC codes from table of handlers'):
+
+	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/networkclientrpc.lua”文件。
+	定位到如下代码行（搜索“Generate RPC codes from table of handlers”就能找到）：	
+
+```lua
+--Generate RPC codes from table of handlers
+
+local i = 1
+for k, v in pairs(RPC_HANDLERS) do
+    RPC[k] = i
+    i = i + 1
+end
+i = nil
+```
+	
+	Replace them with:
+
+	使用如下的代码替换掉上面的内容：
+
+```lua
+--Generate RPC codes from table of handlers
+local temp = {}
+for k, v in pairs(RPC_HANDLERS) do
+    table.insert(temp, k)
+end
+
+table.sort(temp)
+
+for k, v in ipairs(temp) do
+    RPC[v] = k
+end
+```
+	Save networkclientrpc.lua. 
+
+	保存 networkclientrpc.lua 文件。
+
+##Compile（编译）: 
 
 	The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate 
 	binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ 
