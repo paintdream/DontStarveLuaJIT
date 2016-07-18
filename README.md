@@ -128,7 +128,7 @@ end
 
 	保存 networkclientrpc.lua 文件。
 
-##Compile（编译）: 
+##Compilation（编译）: 
 
 	The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate 
 	binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ 
