@@ -664,3 +664,12 @@ MSize LJ_FASTCALL lj_tab_len(GCtab *t)
   return unbound_search(t, j);
 }
 
+MSize LJ_FASTCALL lj_tab_arraylen(GCtab *t)
+{
+  MSize j = (MSize)t->asize;
+  while (j > 1 && tvisnil(arrayslot(t, j - 1))) {
+    j--;
+  }
+  if (j) --j;
+  return j;
+}

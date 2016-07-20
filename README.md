@@ -34,35 +34,7 @@
 
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
 
-##### Step 2:
-
-	Open "[Your Don't Starve Directory]/data/scripts/main.lua" with an text editor.
-	Add following lines at the beginning:
-
-	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/main.lua”文件。
-	在开头添加如下代码：
-
-```lua
-local function unpackex (t, index, limit)
-	if (index <= limit) then
-		return t[index], unpackex(t, index + 1, limit)
-	end
-end
-
-unpack = function (t)
-	local cnt = 0
-	for k in pairs(t) do
-		if (type(k) == "number") then
-			cnt = k
-		end
-	end
-
-	return unpackex(t, 1, cnt)
-end
-
-```
-
-##### Step 3: (FOR DST，仅针对联机版)
+##### Step 2: (FOR DST，仅针对联机版)
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
 	Locate the following lines:
 
@@ -89,6 +61,7 @@ end
 	保存 util.lua 文件。
 
 
+##### Step 3: (FOR DST，仅针对联机版)
 
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
 	Locate the following lines (Search 'Generate RPC codes from table of handlers'):

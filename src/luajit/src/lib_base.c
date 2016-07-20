@@ -222,7 +222,7 @@ LJLIB_CF(unpack)
   GCtab *t = lj_lib_checktab(L, 1);
   int32_t n, i = lj_lib_optint(L, 2, 1);
   int32_t e = (L->base+3-1 < L->top && !tvisnil(L->base+3-1)) ?
-	      lj_lib_checkint(L, 3) : (int32_t)lj_tab_len(t);
+	      lj_lib_checkint(L, 3) : (int32_t)lj_tab_arraylen(t);
   if (i > e) return 0;
   n = e - i + 1;
   if (n <= 0 || !lua_checkstack(L, n))
