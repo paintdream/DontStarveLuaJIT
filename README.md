@@ -49,7 +49,7 @@
 	HARVEST = Action(),
 ```
 	
-	Changed the value from 2 to 2.5 as ----<<<< marks. 
+	Change the value from 2 to 2.5 at ----<<<<. 
 
 	如----<<<< 处所示，将原有的值2修改为2.5。
 	
