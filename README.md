@@ -34,7 +34,27 @@
 
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
 
-##### Step 2: (FOR DST，仅针对联机版)
+##### Step 2:
+	Search ALL "actions.lua" in "[Your Don't Starve Directory]/data", open THEM and locate the following lines.
+
+	在“[您的Don't Starve安装目录]/data/”目录下搜索所有的"actions.lua"，打开它们并定位到如下代码：
+
+```lua
+	TALKTO = Action(3, true),
+	WALKTO = Action(-4),
+	BAIT = Action(),
+	CHECKTRAP = Action(2.5), ---<<<<
+	BUILD = Action(),
+	PLANT = Action(),
+	HARVEST = Action(),
+```
+	
+	Changed the value from 2 to 2.5 as ----<<<< marks. 
+
+	如----<<<< 处所示，将原有的值2修改为2.5。
+	
+
+##### Step 3: (FOR DST，仅针对联机版)
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
 	Locate the following lines:
 
@@ -61,7 +81,7 @@ end
 	保存 util.lua 文件。
 
 
-##### Step 3: (FOR DST，仅针对联机版)
+##### Step 4: (FOR DST，仅针对联机版)
 
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
 	Locate the following lines (Search 'Generate RPC codes from table of handlers'):
