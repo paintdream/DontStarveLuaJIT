@@ -40,18 +40,36 @@
 	在“[您的Don't Starve安装目录]/data/”目录下搜索所有的"actions.lua"，打开它们并定位到如下代码：
 
 ```lua
-	TALKTO = Action(3, true),
-	WALKTO = Action(-4),
+ACTIONS=
+{
+	REPAIR = Action(),
+	REPAIRBOAT = Action(nil, nil, nil, 3),
+	READ = Action(),
+	READMAP = Action(),
+	DROP = Action(-1),
+	...
 	BAIT = Action(),
-	CHECKTRAP = Action(2.5), ---<<<<
+	CHECKTRAP = Action(2.5), ----<<<<
 	BUILD = Action(),
 	PLANT = Action(),
-	HARVEST = Action(),
+	...
+	MOUNT = Action(0.5, nil, nil, 5),  ---<<<<
+	DISMOUNT = Action(0.5, nil, nil, 2.5), ---<<<<
+	...
+	STICK = Action(),
+	MATE = Action(),
+	CRAB_HIDE = Action(),
+	DRINK = Action(),
+	TIGERSHARK_FEED = Action(),
+	FLUP_HIDE = Action(),
+	THROW = Action(0, false, true, 20, true),
+	LAUNCH_THROWABLE = Action(0, false, true, 20, true),
+}
 ```
 	
-	Change the value from 2 to 2.5 at ----<<<<. 
+	Change the value as above ----<<<<. 
 
-	如----<<<< 处所示，将原有的值2修改为2.5。
+	如----<<<< 处所示修改Action后的值（如果没找到就略过）。
 	
 
 ##### Step 3: (FOR DST，仅针对联机版)
