@@ -36,44 +36,32 @@
 	
 
 ##### Step 2: (FOR DST，仅针对联机版)
+If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
+	Locate the following lines:
 
-	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
-	Locate the following lines (Search 'Generate RPC codes from table of handlers'):
-
-	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/networkclientrpc.lua”文件。
-	定位到如下代码行（搜索“Generate RPC codes from table of handlers”就能找到）：	
-
-```lua
---Generate RPC codes from table of handlers
-
-local i = 1
-for k, v in pairs(RPC_HANDLERS) do
-    RPC[k] = i
-    i = i + 1
-end
-i = nil
-```
+	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。
+	定位到如下代码行：	
 	
-	Replace them with:
 
-	使用如下的代码替换掉上面的内容：
-
-```lua
---Generate RPC codes from table of handlers
-local temp = {}
-for k, v in pairs(RPC_HANDLERS) do
-    table.insert(temp, k)
-end
-
-table.sort(temp)
-
-for k, v in ipairs(temp) do
-    RPC[v] = k
+```lua	
+function RunInSandboxSafe(untrusted_code, error_handler)
+	error_handler = error_handler or function (str) print("Klei, you have missed this line: " .. str) end --<<<<
+	if untrusted_code:byte(1) == 27 then return nil, "binary bytecode prohibited" end
+	local untrusted_function, message = loadstring(untrusted_code)
+	if not untrusted_function then return nil, message end
+	setfenv(untrusted_function, {} )
+	return xpcall(untrusted_function, error_handler )
 end
 ```
-	Save networkclientrpc.lua. 
+	Add one line at --<<<< mark as above.
 
-	保存 networkclientrpc.lua 文件。
+	在-<<<<标记处如上所示添加一行代码。
+	
+	Save util.lua. 
+
+	保存 util.lua 文件。
+
+
 
 ##Compilation（编译）: 
 
