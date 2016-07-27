@@ -35,41 +35,41 @@
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
 
 ##### Step 2:
-	Search ALL "actions.lua" in "[Your Don't Starve Directory]/data", open THEM and locate the following lines.
+	Open "[Your Don't Starve Directory]/data/scripts/main.lua" and insert the following lines to the beginning of the file.
 
-	在“[您的Don't Starve安装目录]/data/”目录下搜索所有的"actions.lua"，打开它们并定位到如下代码：
+	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/main.lua”在文件开头添加如下代码：
 
 ```lua
-ACTIONS=
-{
-	REPAIR = Action(),
-	REPAIRBOAT = Action(nil, nil, nil, 3),
-	READ = Action(),
-	READMAP = Action(),
-	DROP = Action(-1),
-	...
-	BAIT = Action(),
-	CHECKTRAP = Action(2.5), ----<<<<
-	BUILD = Action(),
-	PLANT = Action(),
-	...
-	MOUNT = Action(0.5, nil, nil, 5),  ---<<<<
-	DISMOUNT = Action(0.5, nil, nil, 2.5), ---<<<<
-	...
-	STICK = Action(),
-	MATE = Action(),
-	CRAB_HIDE = Action(),
-	DRINK = Action(),
-	TIGERSHARK_FEED = Action(),
-	FLUP_HIDE = Action(),
-	THROW = Action(0, false, true, 20, true),
-	LAUNCH_THROWABLE = Action(0, false, true, 20, true),
-}
+local orgsort = table.sort
+
+-- stable sort
+table.sort = function (tab, cmp)
+	-- record order
+	if (cmp and type(cmp) == "function") then
+		-- mark original order
+		local order = {}
+		for i, v in ipairs(tab) do
+			order[v] = i
+		end
+
+		return orgsort(tab, function (a, b)
+			local left = cmp(a, b)
+			local right = cmp(b, a)
+			if (left == right) then
+				return order[a] < order[b]
+			else
+				return left
+			end
+		end)
+	else
+		return orgsort(tab, cmp)
+	end
+end
 ```
 	
-	Change the value as above ----<<<<. 
+	Save main.lua. 
 
-	如----<<<< 处所示修改Action后的值（如果没找到就略过）。
+	保存 main.lua 文件。
 	
 
 ##### Step 3: (FOR DST，仅针对联机版)
