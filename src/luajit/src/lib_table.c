@@ -151,13 +151,13 @@ LJLIB_CF(table_concat)		LJLIB_REC(.)
 
 /* ------------------------------------------------------------------------ */
 
-static void set2(lua_State *L, int i, int j)
+__forceinline void set2(lua_State *L, int i, int j)
 {
   lua_rawseti(L, 1, i);
   lua_rawseti(L, 1, j);
 }
 
-static int sort_comp(lua_State *L, int a, int b)
+__forceinline int sort_comp(lua_State *L, int a, int b)
 {
   if (!lua_isnil(L, 2)) {  /* function? */
     int res;
@@ -299,6 +299,7 @@ LUALIB_API int luaopen_table(lua_State *L)
 {
 /* replace original table.sort */
 
+	/*
   const char* script = "local orgsort = table.sort \n\
 -- stable sort \n\
 table.sort = function (tab, cmp) \n\
@@ -322,7 +323,7 @@ table.sort = function (tab, cmp) \n\
     else \n\
         return orgsort(tab, cmp) \n\
     end \n\
-end";
+end";*/
   LJ_LIB_REG(L, LUA_TABLIBNAME, table);
 #if LJ_52
   lua_getglobal(L, "unpack");
@@ -332,9 +333,10 @@ end";
   lj_lib_prereg(L, LUA_TABLIBNAME ".clear", luaopen_table_clear, tabV(L->top-1));
 
 
+  /*
   luaL_loadstring(L, script);
   lua_call(L, 0, 0);
-
+*/
 
   return 1;
 }

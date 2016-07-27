@@ -126,11 +126,15 @@ GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
   GCobj *o;
   MSize len = (MSize)lenx;
   MSize a, b, h = len;
+  MSize l = len;
+size_t step, l1;
   if (lenx >= LJ_MAX_STR)
     lj_err_msg(L, LJ_ERR_STROV);
   g = G(L);
+  if (len == 0) return &g->strempty;
   /* Compute string hash. Constants taken from lookup3 hash by Bob Jenkins. */
-  if (len >= 4) {  /* Caveat: unaligned access! */
+/*
+  if (len >= 4) { 
     a = lj_getu32(str);
     h ^= lj_getu32(str+len-4);
     b = lj_getu32(str+(len>>1)-2);
@@ -147,6 +151,13 @@ GCstr *lj_str_new(lua_State *L, const char *str, size_t lenx)
   a ^= h; a -= lj_rol(h, 11);
   b ^= a; b -= lj_rol(a, 25);
   h ^= b; h -= lj_rol(b, 16);
+*/
+  h = (unsigned int)l;  /* seed */
+  step = (l>>5)+1;  /* if string is too long, don't hash all its chars */
+
+  for (l1=l; l1>=step; l1-=step)  /* compute hash */
+    h = h ^ ((h<<5)+(h>>2)+(unsigned char)str[l1-1]);
+
   /* Check if the string has already been interned. */
   o = gcref(g->strhash[h & g->strmask]);
   if (LJ_LIKELY((((uintptr_t)str+len-1) & (LJ_PAGESIZE-1)) <= LJ_PAGESIZE-4)) {

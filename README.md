@@ -33,37 +33,9 @@
 	Copy all files from "DontStarveLuaJIT/bin/" to "[Your Don't Starve Directory]/bin/"
 
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
-
 	
 
 ##### Step 2: (FOR DST，仅针对联机版)
-	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
-	Locate the following lines:
-
-	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。
-	定位到如下代码行：	
-	
-
-```lua	
-function RunInSandboxSafe(untrusted_code, error_handler)
-	error_handler = error_handler or function (str) print("Klei, you have missed this line: " .. str) end --<<<<
-	if untrusted_code:byte(1) == 27 then return nil, "binary bytecode prohibited" end
-	local untrusted_function, message = loadstring(untrusted_code)
-	if not untrusted_function then return nil, message end
-	setfenv(untrusted_function, {} )
-	return xpcall(untrusted_function, error_handler )
-end
-```
-	Add one line at --<<<< mark as above.
-
-	在-<<<<标记处如上所示添加一行代码。
-	
-	Save util.lua. 
-
-	保存 util.lua 文件。
-
-
-##### Step 3: (FOR DST，仅针对联机版)
 
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
 	Locate the following lines (Search 'Generate RPC codes from table of handlers'):
@@ -104,6 +76,9 @@ end
 	保存 networkclientrpc.lua 文件。
 
 ##Compilation（编译）: 
+
+	The following part is for developers only.
+	普通玩家止步。这部分内容是给开发者看的。
 
 	The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate 
 	binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ 
