@@ -34,45 +34,9 @@
 
 	复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
 
-##### Step 2:
-	Open "[Your Don't Starve Directory]/data/scripts/main.lua" and insert the following lines to the beginning of the file.
-
-	使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/main.lua”在文件开头添加如下代码：
-
-```lua
-local orgsort = table.sort
-
--- stable sort
-table.sort = function (tab, cmp)
-	-- record order
-	if (cmp and type(cmp) == "function") then
-		-- mark original order
-		local order = {}
-		for i, v in ipairs(tab) do
-			order[v] = i
-		end
-
-		return orgsort(tab, function (a, b)
-			local left = cmp(a, b)
-			local right = cmp(b, a)
-			if (left == right) then
-				return order[a] < order[b]
-			else
-				return left
-			end
-		end)
-	else
-		return orgsort(tab, cmp)
-	end
-end
-```
-	
-	Save main.lua. 
-
-	保存 main.lua 文件。
 	
 
-##### Step 3: (FOR DST，仅针对联机版)
+##### Step 2: (FOR DST，仅针对联机版)
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
 	Locate the following lines:
 
@@ -99,7 +63,7 @@ end
 	保存 util.lua 文件。
 
 
-##### Step 4: (FOR DST，仅针对联机版)
+##### Step 3: (FOR DST，仅针对联机版)
 
 	If it's DST, open "[Your Don't Starve Directory]/data/scripts/networkclientrpc.lua" with an text editor.
 	Locate the following lines (Search 'Generate RPC codes from table of handlers'):

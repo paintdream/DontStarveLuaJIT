@@ -236,6 +236,7 @@ static void auxsort(lua_State *L, int l, int u)
   }  /* repeat the routine for the larger one */
 }
 
+
 LJLIB_CF(table_sort)
 {
   GCtab *t = lj_lib_checktab(L, 1);
@@ -292,9 +293,36 @@ static int luaopen_table_clear(lua_State *L)
 /* ------------------------------------------------------------------------ */
 
 #include "lj_libdef.h"
+#include "lauxlib.h"
 
 LUALIB_API int luaopen_table(lua_State *L)
 {
+/* replace original table.sort */
+
+  const char* script = "local orgsort = table.sort \n\
+-- stable sort \n\
+table.sort = function (tab, cmp) \n\
+    -- record order \n\
+    if (cmp and type(cmp) == \"function\") then \n\
+        -- mark original order \n\
+        local order = {} \n\
+        for i, v in ipairs(tab) do \n\
+            order[v] = i \n\
+        end \n\
+ \n\
+        return orgsort(tab, function (a, b) \n\
+            local left = cmp(a, b) \n\
+            local right = cmp(b, a) \n\
+            if (left == right) then \n\
+                return order[a] < order[b] \n\
+            else \n\
+                return left \n\
+            end \n\
+        end) \n\
+    else \n\
+        return orgsort(tab, cmp) \n\
+    end \n\
+end";
   LJ_LIB_REG(L, LUA_TABLIBNAME, table);
 #if LJ_52
   lua_getglobal(L, "unpack");
@@ -302,6 +330,12 @@ LUALIB_API int luaopen_table(lua_State *L)
 #endif
   lj_lib_prereg(L, LUA_TABLIBNAME ".new", luaopen_table_new, tabV(L->top-1));
   lj_lib_prereg(L, LUA_TABLIBNAME ".clear", luaopen_table_clear, tabV(L->top-1));
+
+
+  luaL_loadstring(L, script);
+  lua_call(L, 0, 0);
+
+
   return 1;
 }
 
