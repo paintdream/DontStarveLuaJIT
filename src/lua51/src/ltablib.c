@@ -170,12 +170,12 @@ static int tconcat (lua_State *L) {
 */
 
 
-static void set2 (lua_State *L, int i, int j) {
+__forceinline void set2 (lua_State *L, int i, int j) {
   lua_rawseti(L, 1, i);
   lua_rawseti(L, 1, j);
 }
 
-static int sort_comp (lua_State *L, int a, int b) {
+__forceinline int sort_comp (lua_State *L, int a, int b) {
   if (!lua_isnil(L, 2)) {  /* function? */
     int res;
     lua_pushvalue(L, 2);
