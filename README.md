@@ -36,7 +36,8 @@
 	
 
 ##### Step 2: (FOR DST，仅针对联机版)
-If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
+
+	If it's DST, open "[Your Don't Starve Directory]/data/scripts/util.lua" with an text editor.
 	Locate the following lines:
 
 	如果是联机版，还需要使用文本编辑器打开“[您的Don't Starve安装目录]/data/scripts/util.lua”文件。
