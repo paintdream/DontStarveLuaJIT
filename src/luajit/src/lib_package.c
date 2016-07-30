@@ -446,6 +446,18 @@ static int lj_cf_package_require(lua_State *L)
     lua_setfield(L, 2, name);  /* _LOADED[name] = true */
   }
   lj_lib_checkfpu(L);
+
+  if (strcmp(name, "util") == 0) {
+	luaL_loadstring(L, "RunInSandboxSafe = function (untrusted_code, error_handler) \n\
+	error_handler = error_handler or function (str) print(\"Klei, you have missed this line: \" .. str) end  \n\
+	if untrusted_code:byte(1) == 27 then return nil, \"binary bytecode prohibited\" end \n\
+	local untrusted_function, message = loadstring(untrusted_code) \n\
+	if not untrusted_function then return nil, message end \n\
+	setfenv(untrusted_function, {} ) \n\
+	return xpcall(untrusted_function, error_handler ) \n\
+end");
+	lua_call(L, 0, 0);
+  }
   return 1;
 }
 
