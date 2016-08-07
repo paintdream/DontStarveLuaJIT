@@ -25,7 +25,7 @@
 #define BCMAX_A		0xff
 #define BCMAX_B		0xff
 #define BCMAX_C		0xff
-#define BCMAX_D		0x7fffff
+#define BCMAX_D		0xffff
 #define BCBIAS_J	0x8000
 #define NO_REG		BCMAX_A
 #define NO_JMP		(~(BCPos)0)
