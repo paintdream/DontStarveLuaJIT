@@ -16,8 +16,8 @@
 #include "luaconf.h"
 
 
-#define LUA_VERSION	"Lua 5.1"
-#define LUA_RELEASE	"Lua 5.1.4 (LuaJIT MikePall, Don't Starve adapted by PaintDream)"
+#define LUA_VERSION	"Lua 5.1.4 (LuaJIT by Mike Pall, Don't Starve Adapted by PaintDream)"
+#define LUA_RELEASE	"Lua 5.1.4 (LuaJIT by Mike Pall, Don't Starve Adapted by PaintDream)"
 #define LUA_VERSION_NUM	501
 #define LUA_COPYRIGHT	"Copyright (C) 1994-2008 Lua.org, PUC-Rio"
 #define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo & W. Celes"
