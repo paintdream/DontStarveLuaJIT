@@ -15,15 +15,6 @@
 
 ####  如果您打算将这个MOD安装到联机版本（Don't Starve Together），请确保在客户端和服务端都安装了这个MOD！
 
------------------------------------------------------
-
-#####  SOME SAVES CREATED WITHOUT THIS PATCH CANNOT BE LOADED DUE TO EXTRA
-#####  DATA WRITTEN BY SOME MODS USING ENGINE-RELATED FUNCTIONS (SUCH AS lua_dump).
-#####  THESE DATA CANNOT BE RECOGNIZED BY LUAJIT.
-
-#####  一些在这个补丁使用之前创建的存档可能无法被正确加载。
-#####  这是由于一些MODs使用了引擎相关的函数向存档内写入了数据。
-#####  这些数据不能被LUAJIT正确解析。
 
 -------------------------------------------------------
 
