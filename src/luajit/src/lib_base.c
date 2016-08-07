@@ -408,8 +408,62 @@ LJLIB_CF(load)
   return load_aux(L, status, 4);
 }
 
+void filter(lua_State* L) {
+	char ch, check = 0;
+	int level = 0;
+	int t = lua_type(L, 1);
+	int happen = 0;
+	const char* p = lua_tostring(L, 1);
+	long size = lua_objlen(L, 1);
+	char levelMasks[1024];
+	memset(levelMasks, 0, sizeof(levelMasks));
+	if (t == LUA_TSTRING) {
+		char* target = (char*)malloc(size * 2);
+		char* q = target;
+		while (size-- > 0) {
+			ch = *p++;
+			if (ch == '{') {
+				level++;
+				if (check) {
+					const char* ts = "((function () return {";
+					--q;
+					memcpy(q, ts, strlen(ts));
+					q += strlen(ts);
+					levelMasks[level - 2] = 1;
+					check = 0;
+					happen = 1;
+				}
+
+				check = 1;
+				*q++ = (char)ch;
+			} else {
+				*q++ = (char)ch;
+				if (ch == '}') {
+					level--;
+					if (levelMasks[level] != 0) {
+						const char* ts = "end)())";
+						memcpy(q, ts, strlen(ts));
+						q += strlen(ts);
+						levelMasks[level] = 0;
+					}
+				}
+				check = 0;
+			}
+		}
+
+		if (happen) {
+			*q = 0;
+			lua_pushlstring(L, target, q - target);
+			lua_replace(L, 1);
+		}
+
+		free(target);
+	}
+}
+
 LJLIB_CF(loadstring)
 {
+  filter(L);
   return lj_cf_load(L);
 }
 
