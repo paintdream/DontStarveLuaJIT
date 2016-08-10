@@ -413,6 +413,7 @@ void filter(lua_State* L) {
 	int level = 0;
 	int t = lua_type(L, 1);
 	int happen = 0;
+	int quote = 0;
 	const char* p = lua_tostring(L, 1);
 	long size = lua_objlen(L, 1);
 	char levelMasks[1024];
@@ -422,31 +423,41 @@ void filter(lua_State* L) {
 		char* q = target;
 		while (size-- > 0) {
 			ch = *p++;
-			if (ch == '{') {
-				level++;
-				if (check) {
-					const char* ts = "((function () return {";
-					--q;
-					memcpy(q, ts, strlen(ts));
-					q += strlen(ts);
-					levelMasks[level - 2] = 1;
-					check = 0;
-					happen = 1;
-				}
+			if (ch == '"') {
+				quote = !quote;
+			}
 
-				check = 1;
-				*q++ = (char)ch;
-			} else {
-				*q++ = (char)ch;
-				if (ch == '}') {
-					level--;
-					if (levelMasks[level] != 0) {
-						const char* ts = "end)())";
+			if (!quote) {
+				if (ch == '{') {
+					level++;
+					if (check) {
+						const char* ts = "((function () return {";
+						--q;
 						memcpy(q, ts, strlen(ts));
 						q += strlen(ts);
-						levelMasks[level] = 0;
+						levelMasks[level - 2] = 1;
+						check = 0;
+						happen = 1;
 					}
+
+					check = 1;
+					*q++ = (char)ch;
+				} else {
+					*q++ = (char)ch;
+					if (level > 0 && ch == '}') {
+						level--;
+						
+						if (levelMasks[level] != 0) {
+							const char* ts = "end)())";
+							memcpy(q, ts, strlen(ts));
+							q += strlen(ts);
+							levelMasks[level] = 0;
+						}
+					}
+					check = 0;
 				}
+			} else {
+				*q++ = (char)ch;
 				check = 0;
 			}
 		}
