@@ -414,6 +414,7 @@ void filter(lua_State* L) {
 	int t = lua_type(L, 1);
 	int happen = 0;
 	int quote = 0;
+  int slash = 0;
 	const char* p = lua_tostring(L, 1);
 	long size = lua_objlen(L, 1);
 	char levelMasks[1024];
@@ -423,15 +424,16 @@ void filter(lua_State* L) {
 		char* q = target;
 		while (size-- > 0) {
 			ch = *p++;
-			if (ch == '"') {
+			if (ch == '"' && !slash) {
 				quote = !quote;
 			}
 
 			if (!quote) {
 				if (ch == '{') {
+
 					level++;
 					if (check) {
-						const char* ts = "((function () return {";
+						const char* ts = "(function () return {";
 						--q;
 						memcpy(q, ts, strlen(ts));
 						q += strlen(ts);
@@ -448,7 +450,7 @@ void filter(lua_State* L) {
 						level--;
 						
 						if (levelMasks[level] != 0) {
-							const char* ts = "end)())";
+							const char* ts = "end)()";
 							memcpy(q, ts, strlen(ts));
 							q += strlen(ts);
 							levelMasks[level] = 0;
@@ -457,6 +459,11 @@ void filter(lua_State* L) {
 					check = 0;
 				}
 			} else {
+        if (ch == '\\') {
+          slash = !slash;
+        } else {
+          slash = 0;
+        }
 				*q++ = (char)ch;
 				check = 0;
 			}
@@ -464,6 +471,11 @@ void filter(lua_State* L) {
 
 		if (happen) {
 			*q = 0;
+      /* printf("TARGET: %s\n", target); */
+/*
+      FILE* tg = fopen("modified.lua", "wb");
+      fwrite(target, q-target, 1, tg);
+      fclose(tg);*/
 			lua_pushlstring(L, target, q - target);
 			lua_replace(L, 1);
 		}
