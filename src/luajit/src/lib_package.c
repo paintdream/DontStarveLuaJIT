@@ -455,7 +455,11 @@ static int lj_cf_package_require(lua_State *L)
 	if not untrusted_function then return nil, message end \n\
 	setfenv(untrusted_function, {} ) \n\
 	return xpcall(untrusted_function, error_handler ) \n\
-end");
+end \n\
+  function table.reverse(t) \n\
+    return t \n\
+  end \n\
+");
 	lua_call(L, 0, 0);
   }
   return 1;
