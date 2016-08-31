@@ -456,8 +456,13 @@ static int lj_cf_package_require(lua_State *L)
 	setfenv(untrusted_function, {} ) \n\
 	return xpcall(untrusted_function, error_handler ) \n\
 end \n\
-  function table.reverse(t) \n\
-    return t \n\
+  function table.reverse(tab) \n\
+    local size = #tab \n\
+    local newTable = {} \n\
+    for i = 1, size - 1 do \n\
+        newTable[size-i] = newTable[i] \n\
+    end \n\
+    return newTable \n\
   end \n\
 ");
 	lua_call(L, 0, 0);
