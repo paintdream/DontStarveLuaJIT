@@ -36,7 +36,7 @@
 #include <vector>
 #include <set>
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <queue>
 #include <stack>
 #include <cassert>
@@ -105,100 +105,108 @@ extern CAPIHook hook_glBufferData;
 extern CAPIHook hook_glGenBuffers;
 extern CAPIHook hook_glDeleteBuffers;
 
-struct CachedBuffer {
-	CachedBuffer() : bufferID(0) {}
-	unsigned int bufferID;
-	std::string data;
-	int target;
+struct BufferID {
+	BufferID() : glBufferID(0), nextFreeIndex(0) {}
+	int glBufferID;
+	int nextFreeIndex;
 };
 
-std::stack<CachedBuffer> cachedBuffers;
-
 unsigned int currentBufferID = 0;
-std::vector<CachedBuffer> bufferData;
+unsigned int currentFreeIndex = 0; // 0 is reserved
+
+std::vector<BufferID> bufferIDs;
+unsigned int MAX_VISIT = 0x500;
+
+std::tr1::unordered_map<std::string, unsigned int> mapDataToBufferID;
+
+
+struct BufferRef {
+	BufferRef() : ref(0), nextFreeIndex(0) {}
+	int ref;
+	int nextFreeIndex;
+	std::tr1::unordered_map<std::string, unsigned int>::iterator iterator;
+};
+
+std::vector<BufferRef> bufferRefs;
+unsigned int currentFreeBufferRef = 0;
 
 void _stdcall Proxy_glBindBuffer(int target, unsigned int buffer) {
 	currentBufferID = buffer;
-	((PFNGLBINDBUFFERARBPROC)(PROC)hook_glBindBuffer)(target, buffer);
+	((PFNGLBINDBUFFERARBPROC)(PROC)hook_glBindBuffer)(target, bufferIDs[currentBufferID].glBufferID);
 }
 
-void _stdcall Proxy_glBufferData(int target, int size, const void *data, int usage) {
-	if (currentBufferID >= bufferData.size()) {
-		bufferData.resize(currentBufferID * 2 + 1);
-	}
-
-	CachedBuffer& buffer = bufferData[currentBufferID];
-	int orgTarget = buffer.target;
-	std::string& lastData = buffer.data;
-	int lastSize = lastData.size();
-	bool canCache = orgTarget == target && data != NULL && size == lastSize && memcmp(data, lastData.c_str(), size) == 0;
-	// printf("%s\n", canCache ? "CACHE!" : "LOAD!");
-	if (!canCache) {
-		((PFNGLBUFFERDATAARBPROC)(PROC)hook_glBufferData)(target, size, data, usage);
-		
-		/*
-		printf("Cached Buffer[%d] size %X/%X captured at %d.\n", currentBufferID, size, lastSize, clock());
-		printf("Cached: \n");
-		DumpHex((const BYTE*)lastData.c_str(), 8);
-		printf("New: \n");
-		DumpHex((const BYTE*)data, 8);
-		*/
-
-		buffer.target = target;
-		if (data == NULL) {
-			lastData.clear();
-		} else {
-			lastData.assign((const char*)data, size);
+inline void CheckRef(unsigned int id) {
+	unsigned int org = bufferIDs[currentBufferID].glBufferID;
+	if (org != id) {
+		bufferRefs[id].ref++;
+		bufferIDs[currentBufferID].glBufferID = id;
+		if (org != 0) {
+			bufferRefs[org].ref--;
+			if (bufferRefs[org].ref == 0) {
+			//	printf("DROP INDEX: %d\n", org);
+				bufferRefs[org].nextFreeIndex = currentFreeBufferRef;
+				currentFreeBufferRef = org;
+				mapDataToBufferID.erase(bufferRefs[org].iterator);
+			}
 		}
 	}
 }
 
+
+void _stdcall Proxy_glBufferData(int target, int size, const void *data, int usage) {
+	std::string content((const char*)data, size);
+	content.append(std::string((const char*)&target, sizeof(target)));
+
+	std::tr1::unordered_map<std::string, unsigned int>::iterator p = mapDataToBufferID.find(content);
+	if (p != mapDataToBufferID.end()) {
+		unsigned int id = p->second;
+		((PFNGLBINDBUFFERARBPROC)(PROC)hook_glBindBuffer)(target, id);
+		CheckRef(id);
+		// printf("REUSE!!!! %d\n", id);
+	} else {
+		// Allocate gl buffer id
+		unsigned int id = 0;
+		if (currentFreeBufferRef != 0) {
+			id = currentFreeBufferRef;
+			currentFreeBufferRef = bufferRefs[id].nextFreeIndex;
+		} else {
+			((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(1, &id);
+			if (bufferRefs.size() <= id) {
+				bufferRefs.resize(id + 1);
+			}
+		}
+		
+		((PFNGLBINDBUFFERARBPROC)(PROC)hook_glBindBuffer)(target, id);
+		((PFNGLBUFFERDATAARBPROC)(PROC)hook_glBufferData)(target, size, data, usage);
+
+		// connect
+		CheckRef(id);
+
+		bufferRefs[id].iterator = mapDataToBufferID.insert(std::make_pair(content, id)).first;
+	//	printf("ALLOCATE!!!! %d\n", id);
+	}
+}
+
 void _stdcall Proxy_glGenBuffers(int n, unsigned int* buffers) {
-	// TEST...
-	/*
-	const int N = 5, M = 4;
-	unsigned int test[N];
-	((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(N, test);
-	for (int i = 0; i < N; i++) {
-		printf("BufferID[%d] = \n", test[i]);
-	}
-
-	((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(M / 2, test);
-	((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(M / 2, test + M / 2);
-	((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(M, test);
-	for (int i = 0; i < N; i++) {
-		printf("BufferID[%d] = \n", test[i]);
-	}
-	*/
-
-	while (n > 0 && !cachedBuffers.empty()) {
-		CachedBuffer& buffer = cachedBuffers.top();
-		unsigned int id = buffer.bufferID;
-		bufferData[id].target = buffer.target;
-		std::swap(bufferData[id].data, buffer.data);
-		cachedBuffers.pop();
-		*buffers++ = id;
-		n--;
-		// printf("Cached buffer: %d generated.\n", id);
-	}
-
-	if (n != 0) {
-		((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(n, buffers);
+	while (n-- > 0) {
+		if (currentFreeIndex != 0) {
+			unsigned int p = currentFreeIndex;
+			*buffers++ = p;
+			currentFreeIndex = bufferIDs[p].nextFreeIndex;
+			bufferIDs[p].nextFreeIndex = 0;
+		} else {
+			// generate new one
+			*buffers++ = bufferIDs.size();
+			bufferIDs.push_back(BufferID());
+		}
 	}
 }
 
 void _stdcall Proxy_glDeleteBuffers(int n, const unsigned int* buffers) {
 	for (int i = 0; i < n; i++) {
 		unsigned int id = buffers[i];
-		if (id < bufferData.size()) {
-			cachedBuffers.push(CachedBuffer());
-			CachedBuffer& buffer = cachedBuffers.top();
-			assert(buffer.data.empty());
-			buffer.bufferID = id;
-			buffer.target = bufferData[id].target;
-			std::swap(buffer.data, bufferData[id].data);
-		//	printf("Collected buffer: %d enqueued.\n", buffer.bufferID);
-		}
+		bufferIDs[id].nextFreeIndex = currentFreeIndex;
+		currentFreeIndex = id;
 	}
 
 	// ((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(n, buffers);
@@ -210,7 +218,8 @@ CAPIHook hook_glGenBuffers("libglesv2.dll", "glGenBuffers", (PROC)Proxy_glGenBuf
 CAPIHook hook_glDeleteBuffers("libglesv2.dll", "glDeleteBuffers", (PROC)Proxy_glDeleteBuffers);
 
 void RedirectOpenGLEntries() {
-	bufferData.resize(0x2000);
+	bufferIDs.push_back(BufferID()); // reserved.
+	bufferRefs.push_back(BufferRef());
 }
 
 
@@ -356,7 +365,7 @@ public:
 		// printf("Get to entry\n");
 		GetEntries(to, toEntries);
 
-		std::map<std::string, BYTE*> mapAddress;
+		std::tr1::unordered_map<std::string, BYTE*> mapAddress;
 		for (std::set<Entry>::iterator it = toEntries.begin(); it != toEntries.end(); ++it) {
 			mapAddress[(*it).name] = (*it).address;
 			// printf("Function Refs (%s)\n", (*it).name.c_str());
@@ -370,7 +379,7 @@ public:
 			printf("Text base: %p size %p\n", (BYTE*)from + header->OptionalHeader.BaseOfCode, header->OptionalHeader.SizeOfCode);
 
 			std::set<BYTE*> marked;
-			std::map<ULONG, std::list<Entry> > mapEntries;
+			std::tr1::unordered_map<ULONG, std::list<Entry> > mapEntries;
 			BYTE* addrMin = (BYTE*)0xFFFFFFFF;
 			BYTE* addrMax = (BYTE*)0x0;
 
@@ -524,15 +533,15 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 			TCHAR filePath[MAX_PATH];
 			::GetModuleFileName(NULL, filePath, MAX_PATH);
 			
-			::AllocConsole();
-			FILE* fout = freopen("CONOUT$", "w+t", stdout);
-			FILE* fin = freopen("CONIN$", "r+t", stdin);
+			// ::AllocConsole();
+			// FILE* fout = freopen("CONOUT$", "w+t", stdout);
+			// FILE* fin = freopen("CONIN$", "r+t", stdin);
 			
 
 			g_isDST = CheckDST();
 			printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
-			// RedirectOpenGLEntries();
+			RedirectOpenGLEntries();
 			//system("pause");
 			
 			// fclose(fout);
