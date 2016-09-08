@@ -37,7 +37,11 @@
 #include <set>
 #include <list>
 #include <map>
+#include <queue>
+#include <stack>
+#include <cassert>
 
+#include "APIHook.h"
 #pragma comment(lib, "dbghelp.lib")
 
 #ifdef _MERGE_PROXYSTUB
@@ -90,6 +94,126 @@ void DumpHex(const BYTE* p, size_t size) {
 		printf("\n");
 	}
 }
+
+typedef void (_stdcall * PFNGLBINDBUFFERARBPROC) (int target, unsigned int buffer);
+typedef void (_stdcall * PFNGLBUFFERDATAARBPROC) (int target, int size, const void *data, int usage);
+typedef void (_stdcall * PFNGLGENBUFFERSARBPROC) (int n, unsigned int* buffers);
+typedef void (_stdcall * PFNGLDELETEBUFFERSARBPROC) (int n, const unsigned int* buffers);
+
+extern CAPIHook hook_glBindBuffer;
+extern CAPIHook hook_glBufferData;
+extern CAPIHook hook_glGenBuffers;
+extern CAPIHook hook_glDeleteBuffers;
+
+struct CachedBuffer {
+	CachedBuffer() : bufferID(0) {}
+	unsigned int bufferID;
+	std::string data;
+	int target;
+};
+
+std::stack<CachedBuffer> cachedBuffers;
+
+unsigned int currentBufferID = 0;
+std::vector<CachedBuffer> bufferData;
+
+void _stdcall Proxy_glBindBuffer(int target, unsigned int buffer) {
+	currentBufferID = buffer;
+	((PFNGLBINDBUFFERARBPROC)(PROC)hook_glBindBuffer)(target, buffer);
+}
+
+void _stdcall Proxy_glBufferData(int target, int size, const void *data, int usage) {
+	if (currentBufferID >= bufferData.size()) {
+		bufferData.resize(currentBufferID * 2 + 1);
+	}
+
+	CachedBuffer& buffer = bufferData[currentBufferID];
+	int orgTarget = buffer.target;
+	std::string& lastData = buffer.data;
+	int lastSize = lastData.size();
+	bool canCache = orgTarget == target && data != NULL && size == lastSize && memcmp(data, lastData.c_str(), size) == 0;
+	// printf("%s\n", canCache ? "CACHE!" : "LOAD!");
+	if (!canCache) {
+		((PFNGLBUFFERDATAARBPROC)(PROC)hook_glBufferData)(target, size, data, usage);
+		
+		/*
+		printf("Cached Buffer[%d] size %X/%X captured at %d.\n", currentBufferID, size, lastSize, clock());
+		printf("Cached: \n");
+		DumpHex((const BYTE*)lastData.c_str(), 8);
+		printf("New: \n");
+		DumpHex((const BYTE*)data, 8);
+		*/
+
+		buffer.target = target;
+		if (data == NULL) {
+			lastData.clear();
+		} else {
+			lastData.assign((const char*)data, size);
+		}
+	}
+}
+
+void _stdcall Proxy_glGenBuffers(int n, unsigned int* buffers) {
+	// TEST...
+	/*
+	const int N = 5, M = 4;
+	unsigned int test[N];
+	((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(N, test);
+	for (int i = 0; i < N; i++) {
+		printf("BufferID[%d] = \n", test[i]);
+	}
+
+	((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(M / 2, test);
+	((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(M / 2, test + M / 2);
+	((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(M, test);
+	for (int i = 0; i < N; i++) {
+		printf("BufferID[%d] = \n", test[i]);
+	}
+	*/
+
+	while (n > 0 && !cachedBuffers.empty()) {
+		CachedBuffer& buffer = cachedBuffers.top();
+		unsigned int id = buffer.bufferID;
+		bufferData[id].target = buffer.target;
+		std::swap(bufferData[id].data, buffer.data);
+		cachedBuffers.pop();
+		*buffers++ = id;
+		n--;
+		// printf("Cached buffer: %d generated.\n", id);
+	}
+
+	if (n != 0) {
+		((PFNGLGENBUFFERSARBPROC)(PROC)hook_glGenBuffers)(n, buffers);
+	}
+}
+
+void _stdcall Proxy_glDeleteBuffers(int n, const unsigned int* buffers) {
+	for (int i = 0; i < n; i++) {
+		unsigned int id = buffers[i];
+		if (id < bufferData.size()) {
+			cachedBuffers.push(CachedBuffer());
+			CachedBuffer& buffer = cachedBuffers.top();
+			assert(buffer.data.empty());
+			buffer.bufferID = id;
+			buffer.target = bufferData[id].target;
+			std::swap(buffer.data, bufferData[id].data);
+		//	printf("Collected buffer: %d enqueued.\n", buffer.bufferID);
+		}
+	}
+
+	// ((PFNGLDELETEBUFFERSARBPROC)(PROC)hook_glDeleteBuffers)(n, buffers);
+}
+
+CAPIHook hook_glBindBuffer("libglesv2.dll", "glBindBuffer", (PROC)Proxy_glBindBuffer);
+CAPIHook hook_glBufferData("libglesv2.dll", "glBufferData", (PROC)Proxy_glBufferData);
+CAPIHook hook_glGenBuffers("libglesv2.dll", "glGenBuffers", (PROC)Proxy_glGenBuffers);
+CAPIHook hook_glDeleteBuffers("libglesv2.dll", "glDeleteBuffers", (PROC)Proxy_glDeleteBuffers);
+
+void RedirectOpenGLEntries() {
+	bufferData.resize(0x2000);
+}
+
+
 
 static bool g_isDST = false;
 class Matcher {
@@ -378,6 +502,7 @@ bool CheckDST() {
 	return false;
 }
 
+
 BOOL CDontStarveInjectorApp::InitInstance() {
 #ifdef _MERGE_PROXYSTUB
 	hProxyDll = m_hInstance;
@@ -398,20 +523,21 @@ BOOL CDontStarveInjectorApp::InitInstance() {
 
 			TCHAR filePath[MAX_PATH];
 			::GetModuleFileName(NULL, filePath, MAX_PATH);
-			/*
+			
 			::AllocConsole();
 			FILE* fout = freopen("CONOUT$", "w+t", stdout);
 			FILE* fin = freopen("CONIN$", "r+t", stdin);
-			*/
+			
 
 			g_isDST = CheckDST();
 			printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
 			RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
+			// RedirectOpenGLEntries();
 			//system("pause");
-			/*
-			fclose(fout);
-			fclose(fin);
-			::FreeConsole();*/
+			
+			// fclose(fout);
+			// fclose(fin);
+			// ::FreeConsole();
 		}
 	}
 
@@ -473,3 +599,4 @@ STDAPI DllUnregisterServer(void) {
 HRESULT WINAPI DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter) {
 	return pfnDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
 }
+
