@@ -1,10 +1,2 @@
-; DontStarveInjector.def : Declares the module parameters.
-
-LIBRARY      "DontStarveInjector.DLL"
-
 EXPORTS
-	DllCanUnloadNow		PRIVATE
-	DllGetClassObject	PRIVATE
-	DllRegisterServer	PRIVATE
-	DllUnregisterServer	PRIVATE
 	DirectInput8Create
