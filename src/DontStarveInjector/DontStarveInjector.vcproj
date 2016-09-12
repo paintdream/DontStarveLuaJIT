@@ -3,8 +3,9 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="DontStarveInjector"
-	ProjectGUID="{F5D7D1FC-F60A-4238-BA00-150599792BAC}"
-	Keyword="AtlProj"
+	ProjectGUID="{41D27994-831D-46C1-BF33-B790700E427C}"
+	RootNamespace="DontStarveInjector"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -17,12 +18,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfMFC="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
+			UseOfMFC="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -39,24 +38,14 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/DontStarveInjector.tlb"
-				HeaderFileName="DontStarveInjector_i.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="DontStarveInjector_i.c"
-				ProxyFileName="DontStarveInjector_p.c"
-				ValidateParameters="true"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_MERGE_PROXYSTUB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DONTSTARVEINJECTOR_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -66,21 +55,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies=" comsvcs.lib"
-				OutputFile="$(OutDir)\DINPUT8.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile=".\DontStarveInjector.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -109,13 +90,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -131,22 +111,14 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/DontStarveInjector.tlb"
-				HeaderFileName="DontStarveInjector_i.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="DontStarveInjector_i.c"
-				ProxyFileName="DontStarveInjector_p.c"
-				ValidateParameters="true"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_MERGE_PROXYSTUB"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DONTSTARVEINJECTOR_EXPORTS"
 				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -156,21 +128,15 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies=" comsvcs.lib"
 				OutputFile="$(OutDir)\DINPUT8.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile=".\DontStarveInjector.def"
+				ModuleDefinitionFile="DontStarveInjector.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -213,41 +179,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\compreg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dlldatax.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\DontStarveInjector.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DontStarveInjector.def"
-				>
-			</File>
-			<File
-				RelativePath=".\DontStarveInjector.idl"
 				>
 			</File>
 			<File
@@ -285,14 +217,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\compreg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dlldatax.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DontStarveInjector.h"
 				>
 			</File>
@@ -320,41 +244,6 @@
 			>
 			<File
 				RelativePath=".\DontStarveInjector.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\DontStarveInjector.rgs"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Generated Files"
-			SourceControlFiles="false"
-			>
-			<File
-				RelativePath=".\DontStarveInjector_i.c"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						CompileAsManaged="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\DontStarveInjector_i.h"
 				>
 			</File>
 		</Filter>
