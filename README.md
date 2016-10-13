@@ -11,6 +11,10 @@
 
 ####  在启用这个补丁之前，请务必备份你的所有存档。
 
+####  YOU MUST HAVE THIS MOD INSTALLED ON BOTH SERVER AND CLIENT FOR DON'T STARVE TOGETHER!
+
+####  如果您打算将这个MOD安装到联机版本（Don't Starve Together），请确保在客户端和服务端都安装了这个MOD！
+
 
 -------------------------------------------------------
 
