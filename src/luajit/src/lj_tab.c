@@ -142,6 +142,7 @@ static GCtab *newtab(lua_State *L, uint32_t asize, uint32_t hbits)
   }
   if (hbits)
     newhpart(L, t, hbits);
+  t->cache = NULL;
   return t;
 }
 
@@ -457,10 +458,66 @@ cTValue *lj_tab_get(lua_State *L, GCtab *t, cTValue *key)
 
 /* -- Table setters ------------------------------------------------------- */
 
+void lj_tab_prepare_cache(lua_State* L, GCtab* t) {
+	Cache* cache = (Cache*)malloc(sizeof(Cache));
+	cache->size = 0;
+	setmref(cache->head.next, NULL);
+	setmref(cache->current, &cache->head);
+
+	lua_assert(t->cache == NULL);
+	lua_assert(t->cacheHead == NULL);
+	t->cache = cache;
+}
+
+#define maxval(a, b) ((a) > (b) ? (a) : (b))
+
+void lj_tab_commit_cache(lua_State* L, GCtab* t) {
+	Cache* cache = t->cache;
+	Node* head;
+	lua_assert(cache != NULL);
+	t->cache = NULL;
+	lj_tab_resize(L, t, t->asize, hsize2hbits(maxval(cache->size, t->hmask + 1)));
+	head = noderef(cache->head.next);
+	/*
+		printf("START COMMIT!!\n");
+		*/
+	while (head != NULL) {
+		Node* p = noderef(head->next);
+		TValue* v = lj_tab_newkey(L, t, &head->key);
+		/*
+		printf("COMMIT!!\n");
+		if (tvisstr(&head->key)) {
+			printf("COMMIT VALUE: %s\n", strdata(strV(&head->key)));
+		}*/
+		
+		*v = head->val;
+		free(head);
+		head = p;
+	}
+
+	free(cache);
+}
+
 /* Insert new key. Use Brent's variation to optimize the chain length. */
 TValue *lj_tab_newkey(lua_State *L, GCtab *t, cTValue *key)
 {
-  Node *n = hashkey(t, key);
+	Node* n;
+	if (t->cache != NULL) {
+		Node* p = (Node*)malloc(sizeof(Node));
+		setmref(p->next, NULL);
+		setmref(noderef(t->cache->current)->next, p);
+		setmref(t->cache->current, p);
+		setnilV(&p->val);
+		p->key = *key;
+		t->cache->size++;
+		/*
+		if (tvisstr(key)) {
+			printf("CACHED VALUE: %s\n", strdata(strV(key)));
+		}*/
+		return &p->val;
+	}
+
+  n = hashkey(t, key);
   if (!tvisnil(&n->val) || t->hmask == 0) {
     Node *nodebase = noderef(t->node);
     Node *collide, *freenode = getfreetop(t, nodebase);

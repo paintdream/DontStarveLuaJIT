@@ -467,17 +467,6 @@ end \n\
   end \n\
 ");
 	lua_call(L, 0, 0);
-  } else if (strcmp(name, "networkclientrpc") == 0) {
-	  luaL_loadstring(L, "\n\
-local PostSendRPCToServer = SendRPCToServer \n\
-function SendRPCToServer(code, ...) \n\
-	return PostSendRPCToServer((code == 1) and 48 or (code == 48 and 1 or code), ...) \n\
-end \n\
-local PostHandleRPC = HandleRPC \n\
-function HandleRPC(sender, tick, code, data) \n\
-	return PostHandleRPC(sender, tick, (code == 1) and 48 or (code == 48 and 1 or code), data) \n\
-end");
-	  lua_call(L, 0, 0);
   }
   return 1;
 }

@@ -1695,6 +1695,7 @@ static void expr_kvalue(TValue *v, ExpDesc *e)
   }
 }
 
+// #define OPT_NEWKEY
 /* Parse table constructor expression. */
 static void expr_table(LexState *ls, ExpDesc *e)
 {
@@ -1738,6 +1739,7 @@ static void expr_table(LexState *ls, ExpDesc *e)
 	t = lj_tab_new(fs->L, needarr ? narr : 0, hsize2hbits(nhash));
 	kidx = const_gc(fs, obj2gco(t), LJ_TTAB);
 	fs->bcbase[pc].ins = BCINS_AD(BC_TDUP, freg-1, kidx);
+	lj_tab_prepare_cache(fs->L, t);
       }
       vcall = 0;
       expr_kvalue(&k, &key);
@@ -1746,8 +1748,10 @@ static void expr_table(LexState *ls, ExpDesc *e)
       if (expr_isk_nojump(&val)) {  /* Add const key/value to template table. */
 	expr_kvalue(v, &val);
       } else {  /* Otherwise create dummy string key (avoids lj_tab_newkey). */
+#ifdef OPT_NEWKEY
 	settabV(fs->L, v, t);  /* Preserve key with table itself as value. */
 	fixt = 1;   /* Fix this later, after all resizes. */
+#endif
 	goto nonconst;
       }
     } else {
@@ -1759,6 +1763,11 @@ static void expr_table(LexState *ls, ExpDesc *e)
     fs->freereg = freg;
     if (!lex_opt(ls, ',') && !lex_opt(ls, ';')) break;
   }
+
+  if (t) {
+	  lj_tab_commit_cache(fs->L, t);
+  }
+
   lex_match(ls, '}', '{', line);
   if (vcall) {
     BCInsLine *ilp = &fs->bcbase[fs->pc-1];
@@ -1788,6 +1797,7 @@ static void expr_table(LexState *ls, ExpDesc *e)
   } else {
     if (needarr && t->asize < narr)
       lj_tab_reasize(fs->L, t, narr-1);
+#ifdef OPT_NEWKEY
     if (fixt) {  /* Fix value for dummy keys in template table. */
       Node *node = noderef(t->node);
       uint32_t i, hmask = t->hmask;
@@ -1799,6 +1809,7 @@ static void expr_table(LexState *ls, ExpDesc *e)
 	}
       }
     }
+#endif
     lj_gc_check(fs->L);
   }
 }
