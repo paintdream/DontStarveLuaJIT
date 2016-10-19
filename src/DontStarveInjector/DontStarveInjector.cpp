@@ -435,6 +435,7 @@ void RedirectLuaProviderEntries(HMODULE from, HMODULE to, HMODULE refer) {
 	printf("Entries: From %p, To %p, Refer: %p\n", from, to, refer);
 	Matcher matcher(refer);
 	matcher.Redirect(from, to);
+	::FreeLibrary(refer);
 }
 
 typedef HRESULT(WINAPI *PFNDirectInput8Create)(HINSTANCE hinst,
