@@ -493,7 +493,7 @@ public:
 
 				g_isDST = CheckDST();
 				printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
-				RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("luajit.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51.dll")));
+				RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("lua51.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51DS.dll")));
 				RedirectOpenGLEntries();
 				//system("pause");
 
