@@ -11,6 +11,7 @@
 #include <set>
 #include <list>
 #include <unordered_map>
+#include <unordered_set>
 #include <queue>
 #include <stack>
 #include <cassert>
@@ -173,7 +174,7 @@ void RedirectOpenGLEntries() {
 	bufferRefs.push_back(BufferRef());
 }
 
-
+static std::tr1::unordered_set<std::string> nonexistFuncs;
 
 static bool g_isDST = false;
 class Matcher {
@@ -256,6 +257,7 @@ public:
 
 			for (size_t i = 0; i < expt->NumberOfNames; i++) {
 				const char* name = (const char*)instance + (long)names[i];
+				if (nonexistFuncs.count(name) != 0) continue;
 				if ((memcmp(name, "lua_", 4) == 0 || memcmp(name, "luaopen_", 8) == 0) || (g_isDST && memcmp(name, "luaL_", 5) == 0)) {
 					DWORD index = ordinals[i];
 					BYTE* c = (BYTE*)instance + addresses[index];
@@ -470,7 +472,50 @@ HRESULT WINAPI DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, REFIID riidl
 class Init {
 public:
 	Init() {
-
+		nonexistFuncs.insert("luaL_addlstring");
+		nonexistFuncs.insert("luaL_addstring");
+		nonexistFuncs.insert("luaL_addvalue");
+		nonexistFuncs.insert("luaL_argerror");
+		nonexistFuncs.insert("luaL_buffinit");
+		nonexistFuncs.insert("luaL_callmeta");
+		nonexistFuncs.insert("luaL_checkany");
+		nonexistFuncs.insert("luaL_checkinteger");
+		nonexistFuncs.insert("luaL_checklstring");
+		nonexistFuncs.insert("luaL_checknumber");
+		nonexistFuncs.insert("luaL_checkoption");
+		nonexistFuncs.insert("luaL_checkstack");
+		nonexistFuncs.insert("luaL_checkudata");
+		nonexistFuncs.insert("luaL_findtable");
+		nonexistFuncs.insert("luaL_getmetafield");
+		nonexistFuncs.insert("luaL_gsub");
+		nonexistFuncs.insert("luaL_loadbuffer");
+		nonexistFuncs.insert("luaL_loadfile");
+		nonexistFuncs.insert("luaL_loadstring");
+		nonexistFuncs.insert("luaL_newmetatable");
+		nonexistFuncs.insert("luaL_newstate");
+		nonexistFuncs.insert("luaL_openlib");
+		nonexistFuncs.insert("luaL_openlibs");
+		nonexistFuncs.insert("luaL_optinteger");
+		nonexistFuncs.insert("luaL_optlstring");
+		nonexistFuncs.insert("luaL_optnumber");
+		nonexistFuncs.insert("luaL_prepbuffer");
+		nonexistFuncs.insert("luaL_pushresult");
+		nonexistFuncs.insert("luaL_ref");
+		nonexistFuncs.insert("luaL_register");
+		nonexistFuncs.insert("luaL_unref");
+		nonexistFuncs.insert("luaL_where");
+		nonexistFuncs.insert("lua_cpcall");
+		nonexistFuncs.insert("lua_equal");
+		nonexistFuncs.insert("lua_getallocf");
+		nonexistFuncs.insert("lua_gethook");
+		nonexistFuncs.insert("lua_gethookcount");
+		nonexistFuncs.insert("lua_gethookmask");
+		nonexistFuncs.insert("lua_getupvalue");
+		nonexistFuncs.insert("lua_isuserdata");
+		nonexistFuncs.insert("lua_pushvfstring");
+		nonexistFuncs.insert("lua_setallocf");
+		nonexistFuncs.insert("lua_setupvalue");
+		nonexistFuncs.insert("lua_status");
 		// TODO: code your application's behavior here.
 		TCHAR filePath[MAX_PATH];
 		::GetModuleFileName(NULL, filePath, MAX_PATH);
