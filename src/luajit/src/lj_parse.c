@@ -1695,7 +1695,6 @@ static void expr_kvalue(TValue *v, ExpDesc *e)
   }
 }
 
-// #define OPT_NEWKEY
 /* Parse table constructor expression. */
 static void expr_table(LexState *ls, ExpDesc *e)
 {
@@ -1747,11 +1746,11 @@ static void expr_table(LexState *ls, ExpDesc *e)
       lj_gc_anybarriert(fs->L, t);
       if (expr_isk_nojump(&val)) {  /* Add const key/value to template table. */
 	expr_kvalue(v, &val);
+	
       } else {  /* Otherwise create dummy string key (avoids lj_tab_newkey). */
-#ifdef OPT_NEWKEY
 	settabV(fs->L, v, t);  /* Preserve key with table itself as value. */
+	/* printf("IS EMPTY? %p = %d\n", v, tvisnil(v)); */
 	fixt = 1;   /* Fix this later, after all resizes. */
-#endif
 	goto nonconst;
       }
     } else {
@@ -1797,7 +1796,6 @@ static void expr_table(LexState *ls, ExpDesc *e)
   } else {
     if (needarr && t->asize < narr)
       lj_tab_reasize(fs->L, t, narr-1);
-#ifdef OPT_NEWKEY
     if (fixt) {  /* Fix value for dummy keys in template table. */
       Node *node = noderef(t->node);
       uint32_t i, hmask = t->hmask;
@@ -1809,7 +1807,6 @@ static void expr_table(LexState *ls, ExpDesc *e)
 	}
       }
     }
-#endif
     lj_gc_check(fs->L);
   }
 }
