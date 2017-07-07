@@ -21,6 +21,7 @@ CAPIHook::CAPIHook(LPSTR pszModName, LPSTR pszFuncName, PROC pfnHook, BOOL bExcl
 	m_pfnHook = pfnHook;
 	m_pfnOrig = ::GetProcAddress(::GetModuleHandleA(pszModName), pszFuncName);
 
+	if (m_pfnOrig == NULL) return;
 	// 将此对象添加到链表中
 	m_pNext = sm_pHeader;
 	sm_pHeader = this;
@@ -31,6 +32,7 @@ CAPIHook::CAPIHook(LPSTR pszModName, LPSTR pszFuncName, PROC pfnHook, BOOL bExcl
 
 CAPIHook::~CAPIHook()
 {
+	if (m_pfnOrig == NULL) return;
 	// 取消对所有模块中函数的HOOK
 	ReplaceIATEntryInAllMods(m_pszModName, m_pfnHook, m_pfnOrig, m_bExcludeAPIHookMod);
 
