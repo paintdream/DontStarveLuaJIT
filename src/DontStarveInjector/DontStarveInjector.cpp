@@ -529,23 +529,29 @@ public:
 			if (hInput != NULL) {
 				pfnDirectInput8Create = (PFNDirectInput8Create)::GetProcAddress(hInput, "DirectInput8Create");
 
-				TCHAR filePath[MAX_PATH];
-				::GetModuleFileName(NULL, filePath, MAX_PATH);
-
-				// ::AllocConsole();
-				// FILE* fout = freopen("CONOUT$", "w+t", stdout);
-				// FILE* fin = freopen("CONIN$", "r+t", stdin);
-
+				BOOL enableConsole = ::GetFileAttributes(_T("Debug.config")) != INVALID_FILE_ATTRIBUTES;
+				
+				FILE* fout, *fin;
+				if (enableConsole)
+				{
+					::AllocConsole();
+					fout = freopen("CONOUT$", "w+t", stdout);
+					fin = freopen("CONIN$", "r+t", stdin);
+				}
 
 				g_isDST = CheckDST();
 				printf("Application: %s\n", g_isDST ? "Don't Starve Together" : "Don't Starve");
 				RedirectLuaProviderEntries(::GetModuleHandle(NULL), ::LoadLibrary(_T("lua51.dll")), g_isDST ? ::LoadLibrary(_T("lua51DST.dll")) : ::LoadLibrary(_T("lua51DS.dll")));
 				RedirectOpenGLEntries();
-				//system("pause");
 
-				// fclose(fout);
-				// fclose(fin);
-				// ::FreeConsole();
+				if (enableConsole)
+				{
+					system("pause");
+
+					fclose(fout);
+					fclose(fin);
+					::FreeConsole();
+				}
 			}
 		}
 	}

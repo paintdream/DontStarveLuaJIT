@@ -13,6 +13,7 @@
 #include "lj_gc.h"
 #include "lj_err.h"
 #include "lj_tab.h"
+#include "lmem.h"
 
 /* -- Object hashing ------------------------------------------------------ */
 
@@ -459,7 +460,7 @@ cTValue *lj_tab_get(lua_State *L, GCtab *t, cTValue *key)
 /* -- Table setters ------------------------------------------------------- */
 
 void lj_tab_prepare_cache(lua_State* L, GCtab* t) {
-	Cache* cache = (Cache*)malloc(sizeof(Cache));
+	Cache* cache = luaM_new(L, Cache);
 	cache->size = 0;
 	setmref(cache->head.next, NULL);
 	setmref(cache->current, &cache->head);
@@ -497,11 +498,11 @@ void lj_tab_commit_cache(lua_State* L, GCtab* t) {
 			printf("EMPTY VALUE FOR %s\n", strdata(strV(&head->key)));
 		}*/
 		*v = head->val;
-		free(head);
+		luaM_free(head);
 		head = p;
 	}
 
-	free(cache);
+	luaM_free(cache);
 }
 
 /* Insert new key. Use Brent's variation to optimize the chain length. */
@@ -509,7 +510,7 @@ TValue *lj_tab_newkey(lua_State *L, GCtab *t, cTValue *key)
 {
 	Node* n;
 	if (t->cache != NULL) {
-		Node* p = (Node*)malloc(sizeof(Node));
+		Node* p = luaM_new(L, Node);
 		setmref(p->next, NULL);
 		setmref(noderef(t->cache->current)->next, p);
 		setmref(t->cache->current, p);
