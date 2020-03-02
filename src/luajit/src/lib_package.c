@@ -465,6 +465,7 @@ end \n\
 	newTable[size] = tab[size] \n\
     return newTable \n\
   end \n\
+  setmetatable(_G, nil) \n\
 ");
 	lua_call(L, 0, 0);
   }
