@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua51", "lua51\lua51.vcproj", "{A8B0B6F3-A0E1-45B8-B711-45BB7F434CA6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DSTServerInjector", "DSTServerInjector\DSTServerInjector.vcproj", "{6DAB2870-3304-464C-94BF-339E934A0813}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DontStarveInjector", "DontStarveInjector\DontStarveInjector.vcproj", "{41D27994-831D-46C1-BF33-B790700E427C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DontStarveInjector", "DontStarveInjector\DontStarveInjector.vcproj", "{6DAB2870-3304-464C-94BF-339E934A0813}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{6DAB2870-3304-464C-94BF-339E934A0813}.Debug|Win32.Build.0 = Debug|Win32
 		{6DAB2870-3304-464C-94BF-339E934A0813}.Release|Win32.ActiveCfg = Release|Win32
 		{6DAB2870-3304-464C-94BF-339E934A0813}.Release|Win32.Build.0 = Release|Win32
-		{41D27994-831D-46C1-BF33-B790700E427C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{41D27994-831D-46C1-BF33-B790700E427C}.Debug|Win32.Build.0 = Debug|Win32
-		{41D27994-831D-46C1-BF33-B790700E427C}.Release|Win32.ActiveCfg = Release|Win32
-		{41D27994-831D-46C1-BF33-B790700E427C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

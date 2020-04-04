@@ -1,6 +1,5 @@
 //////////////////////////////////////////////////////////////
 // APIHook.cppÎÄ¼þ
-#include "stdafx.h"
 #include "APIHook.h"
 #include "Tlhelp32.h"
 #include <dbghelp.h>

@@ -1,7 +1,6 @@
 /* XDE v1.02 eXtended length disassembler engine, based on LDE/ADE engines */
-#include "StdAfx.h"
 #include "xde.h"
-
+#include <string.h>
 
 unsigned long xde_table[ TBL_max ] =
 {
