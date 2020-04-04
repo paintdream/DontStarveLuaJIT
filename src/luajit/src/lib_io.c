@@ -404,7 +404,7 @@ LJLIB_CF(io_open)
   //if (strstr(fname, "..") != NULL)
 	//  return 0;
   s = lj_lib_optstr(L, 2);
-  mode = s ? strdata(s) : "r";
+  mode = s ? strdata(s) : "rb";
   iof = io_file_new(L);
   iof->fp = fopen(fname, mode);
   return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
