@@ -7,12 +7,12 @@
 # Your platform. See PLATS for possible values.
 PLAT= none
 
-CC= gcc
+CC= gcc -m32
 CFLAGS= -O2 -Wall $(MYCFLAGS)
 AR= ar rcu
 RANLIB= ranlib
 RM= rm -f
-LIBS= -lm $(MYLIBS)
+LIBS= -lm -fPIC -shared $(MYLIBS)
 
 MYCFLAGS=
 MYLDFLAGS=

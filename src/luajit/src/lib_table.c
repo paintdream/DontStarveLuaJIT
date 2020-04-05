@@ -151,13 +151,13 @@ LJLIB_CF(table_concat)		LJLIB_REC(.)
 
 /* ------------------------------------------------------------------------ */
 
-__forceinline void set2(lua_State *L, int i, int j)
+void set2(lua_State *L, int i, int j)
 {
   lua_rawseti(L, 1, i);
   lua_rawseti(L, 1, j);
 }
 
-__forceinline int sort_comp(lua_State *L, int a, int b)
+int sort_comp(lua_State *L, int a, int b)
 {
   if (!lua_isnil(L, 2)) {  /* function? */
     int res;

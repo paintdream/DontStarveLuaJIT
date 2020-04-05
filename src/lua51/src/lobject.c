@@ -168,8 +168,10 @@ __forceinline const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_l
   return svalue(L->top - 1);
 }
 
-
-__forceinline const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
+#ifndef __GNUC__
+__forceinline
+#endif
+const char *luaO_pushfstring (lua_State *L, const char *fmt, ...) {
   const char *msg;
   va_list argp;
   va_start(argp, fmt);

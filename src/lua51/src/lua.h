@@ -12,6 +12,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#ifdef __GNUC__
+#define __forceinline __attribute__((always_inline))
+#endif
 
 #include "luaconf.h"
 
