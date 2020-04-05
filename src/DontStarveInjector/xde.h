@@ -166,10 +166,10 @@ struct xde_instr
 
 #pragma pack(pop)
 
-int __cdecl xde_disasm(/* IN */ unsigned char *opcode,
+int xde_disasm(/* IN */ unsigned char *opcode,
                        /* OUT */ struct xde_instr *diza);
 
-int __cdecl xde_asm(/* OUT */ unsigned char* opcode,
+int xde_asm(/* OUT */ unsigned char* opcode,
                     /* IN */ struct xde_instr* diza);
 
 

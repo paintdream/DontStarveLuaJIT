@@ -574,7 +574,6 @@ struct Entry {
 	size_t validLength;
 	std::string name;
 	BYTE* address;
-	std::list<std::pair<PVOID, std::string> > stringList;
 };
 
 static std::tr1::unordered_set<std::string> missingFuncs;
@@ -615,9 +614,6 @@ static Entry ParseEntry(const std::string& name, const BYTE* c) {
 			PVOID addr = instr.opcode == 0x68 ? *(PVOID*)(c + 1) : (PVOID)instr.addr_l[0];
 			char buf[16];
 			memset(buf, 0, sizeof(buf));
-			if (addr != NULL && ::ReadProcessMemory(::GetCurrentProcess(), addr, buf, 4, NULL)) {
-				entry.stringList.push_back(std::make_pair(addr, std::string(buf)));
-			}
 
 			BYTE temp[16];
 			if (instr.opcode == 0x68) {

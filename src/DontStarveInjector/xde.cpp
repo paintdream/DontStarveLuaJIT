@@ -825,7 +825,7 @@ unsigned long /*__inline*/ reg2xset(int reg_sz /*1,2,4*/, unsigned long reg)
 /*   0 if error                                                             */
 /*   instruction length (== diza.len) if OK                                 */
 
-int __cdecl xde_disasm(/* IN */ unsigned char *opcode,
+int xde_disasm(/* IN */ unsigned char *opcode,
                        /* OUT */ struct xde_instr *diza)
 {
   unsigned char c, *p;
@@ -1327,11 +1327,11 @@ int __cdecl xde_disasm(/* IN */ unsigned char *opcode,
 
   return diza->len;
 
-} /* int __cdecl xde_disasm() */
+} /* int _xde_disasm() */
 
 /* returns: diza.len                                                        */
 
-int __cdecl xde_asm(/* OUT */ unsigned char* opcode,
+int xde_asm(/* OUT */ unsigned char* opcode,
                     /* IN */ struct xde_instr* diza)
 {
   unsigned char* p;
@@ -1353,7 +1353,7 @@ int __cdecl xde_asm(/* OUT */ unsigned char* opcode,
 
   return p - opcode;
 
-} /* int __cdecl xde_asm() */
+} /* int xde_asm() */
 
 /* EOF */
 
