@@ -167,7 +167,7 @@ __forceinline const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_l
   L->top -= n;
   return svalue(L->top - 1);
 }
-
+#ifdef __GNU_C__
 const char *lua_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
   int n = 1;
   pushstr(L, "");
@@ -227,6 +227,7 @@ const char *lua_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
   L->top -= n;
   return svalue(L->top - 1);
 }
+#endif
 
 #ifndef __GNUC__
 __forceinline

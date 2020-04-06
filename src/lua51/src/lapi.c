@@ -196,7 +196,9 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   StkId p;
   StkId q;
   lua_lock(L);
+#ifdef __GNU_C__
   luaC_checkGC_(L);
+#endif
   p = index2adr(L, idx);
   api_checkvalidindex(L, p);
   for (q = L->top; q>p; q--) setobjs2s(L, q, q-1);
@@ -423,7 +425,11 @@ LUA_API const void *lua_topointer (lua_State *L, int idx) {
     case LUA_TTHREAD: return thvalue(o);
     case LUA_TUSERDATA:
     case LUA_TLIGHTUSERDATA:
+#ifdef __GNU_C__
       return lua_touserdata(L, idx);
+#else
+      return lua_touserdata_(L, idx);
+#endif
     default: return NULL;
   }
 }
@@ -467,7 +473,7 @@ LUA_API void lua_pushinteger (lua_State *L, lua_Integer n) {
 
 LUA_API void lua_pushlstring (lua_State *L, const char *s, size_t len) {
   lua_lock(L);
-    luaC_checkGC_(L);
+  luaC_checkGC_(L);
   setsvalue2s(L, L->top, luaS_newlstr(L, s, len));
   api_incr_top(L);
   lua_unlock(L);
@@ -492,7 +498,7 @@ LUA_API void lua_pushstring (lua_State *L, const char *s) {
 }
 
 
-/*
+#ifndef __GNU_C__
 LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
                                       va_list argp) {
   const char *ret;
@@ -501,8 +507,8 @@ LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
   ret = luaO_pushvfstring(L, fmt, argp);
   lua_unlock(L);
   return ret;
-}*/
-
+}
+#endif
 
 
 LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
