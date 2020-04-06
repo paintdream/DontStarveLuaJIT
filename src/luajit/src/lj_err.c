@@ -812,6 +812,11 @@ LUALIB_API int luaL_typerror(lua_State *L, int narg, const char *xname)
   return 0;  /* unreachable */
 }
 
+LUALIB_API void internal_error(lua_State *L, int tag)
+{
+  luaL_typerror(L, 1, lua_typename(L, tag));
+}
+
 LUALIB_API void luaL_where(lua_State *L, int level)
 {
   int size;

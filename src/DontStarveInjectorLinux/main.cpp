@@ -27,8 +27,8 @@ const char* allFunctions[] = {
 			"luaL_newstate", "luaL_openlib", "luaL_openlibs", "luaL_optinteger",
 			"luaL_optlstring", "luaL_optnumber", "luaL_prepbuffer", "luaL_pushresult",
 			"luaL_ref", "luaL_register", "luaL_unref", "luaL_where",
-			 "lua_equal", "lua_getallocf", "lua_getupvalue",
-			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", 
+			 "lua_equal", "lua_getallocf", "lua_getupvalue", "luaL_checkudata",
+			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "internal_error",
 	"luaL_checktype", "luaL_error", "luaL_typerror", "lua_atpanic",
 	"lua_call", "lua_checkstack", "lua_close",
 	"lua_pushlstring", "lua_dump", "lua_error", "lua_gc",
@@ -44,8 +44,8 @@ const char* allFunctions[] = {
 	"lua_remove", "lua_replace", "lua_resume", "lua_setfenv",
 	"lua_setfield", "lua_sethook", "lua_setlocal", "lua_setmetatable",
 	"lua_settable", "lua_settop", "lua_toboolean", "lua_tocfunction",
-	"lua_tointeger", "lua_tolstring", "lua_tonumber", 
-	"lua_tothread", "lua_touserdata", "lua_type", "lua_typename",
+	"lua_tointeger", "lua_tolstring", "lua_tonumber", "lua_topointer",
+	"lua_tothread", "lua_touserdata", "lua_type", "lua_typename", "lua_concat",
 	"lua_xmove", "lua_yield", "luaopen_base", "luaopen_debug",
 	"luaopen_io", "luaopen_math", "luaopen_os", "luaopen_package",
 	"luaopen_string", "luaopen_table",
@@ -165,12 +165,10 @@ public:
 		std::set<Entry> toEntries, entries;
 		GetEntries(refer, entries);
 		GetEntries(to, toEntries);
-		/*
-		uint8_t* h = (uint8_t*)0x8193090;
-		mprotect((void*)0x8193000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
-		*h = 0xc3;
-		mprotect((void*)0x8193000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
-		*/
+		uint8_t* h = (uint8_t*)0x8383C10; // index2addr, should not be called any more
+		mprotect((void*)0x8383000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+		*h = 0xcc;
+		mprotect((void*)0x8383000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
 		std::unordered_map<std::string, uint8_t*> mapAddress;
 		for (std::set<Entry>::iterator it = toEntries.begin(); it != toEntries.end(); ++it) {
 			mapAddress[(*it).name] = (*it).address;
@@ -279,8 +277,7 @@ public:
 		printf("LuaJIT handle: %p\n", to);
 
 		const char* funcs[] = {
-			"luaL_loadfile", "luaL_newstate", "lua_getallocf", "lua_pushvfstring",
-			"lua_insert",
+			"luaL_loadfile", "luaL_newstate", "lua_getallocf"
 		};
 
 		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
