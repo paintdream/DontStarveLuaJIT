@@ -69,6 +69,10 @@ static void tag_error (lua_State *L, int narg, int tag) {
   luaL_typerror(L, narg, lua_typename(L, tag));
 }
 
+LUALIB_API void internal_error (lua_State *L, int n, int tag) {
+  luaL_typerror(L, n, lua_typename(L, tag));
+}
+
 
 LUALIB_API void luaL_where (lua_State *L, int level) {
   lua_Debug ar;
