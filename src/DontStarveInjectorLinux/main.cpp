@@ -208,23 +208,22 @@ public:
 			for (std::set<Entry>::iterator q = entries.begin(); q != entries.end(); ++q) {
 				// bool isCheck = (*q).name == "luaopen_debug";
 				uint8_t* address = mapAddress[(*q).name];
+				uint8_t firstByte = *address;
 				if (address != NULL && (*q).validLength > INSTR_MATCH_COUNT) {
 					int maxCount = 0;
 					int maxTotalCount = 0;
 					uint8_t* best = NULL;
-					for (uint8_t* p = start + 0x300000; p < end; p += PROC_ALIGN) {
+					for (uint8_t* p = start + 0x280000; p < end; p += PROC_ALIGN) {
 						if (*(p - 1) != 0xC3 && *(p - 1) != 0x90) continue;
-
 						if (marked.count(p)) continue;
+						// skip lua_toboolean mess
+						if (*p == 0x31 && *(p + 1) == 0xc0 && *(p + 2) == 0xeb) continue;
+
 						// find nearest
 						uint8_t* left = p;
 						Entry entry = ParseEntry(q->name, left);
 
 						int count = CommonLength(entry.instr, entry.validLength, (*q).instr, std::min((*q).validLength, entry.validLength));
-						/*
-						if (isCheck && (size_t)p == 0x8399850) {
-						}*/
-
 						if (count > maxCount) {
 							maxCount = count;
 							maxTotalCount = maxCount;
@@ -261,6 +260,14 @@ public:
 				}		
 			}
 
+/*
+			mprotect(PAGE_ALIGN(addrMin) - PAGE_SIZE, PAGE_ALIGN(addrMax) - PAGE_ALIGN(addrMin) + PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+			for (uint8_t* p = addrMin; p < addrMax; p += PROC_ALIGN) {
+				if (*(p - 1) != 0xC3 && *(p - 1) != 0x90) continue;
+				*p = 0xcc;
+			}
+			mprotect(PAGE_ALIGN(addrMin) - PAGE_SIZE, PAGE_ALIGN(addrMax) - PAGE_ALIGN(addrMin) + PAGE_SIZE * 2, PROT_READ | PROT_EXEC);*/
+
 			for (std::vector<std::pair<uint8_t*, uint8_t*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
 				Hook((*x).first, (*x).second);
 			}
@@ -277,7 +284,8 @@ public:
 		printf("LuaJIT handle: %p\n", to);
 
 		const char* funcs[] = {
-			"luaL_loadfile", "luaL_newstate", "lua_getallocf"
+			"luaL_loadfile", "luaL_newstate", "luaL_optinteger",
+			"luaL_optlstring", "luaL_optnumber", 
 		};
 
 		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
