@@ -602,7 +602,7 @@ LJ_NOINLINE void lj_err_run(lua_State *L)
 }
 
 /* Formatted runtime error message. */
-LJ_NORET LJ_NOINLINE static void err_msgv(lua_State *L, ErrMsg em, ...)
+LJ_NORET LJ_NOINLINE void err_msgv(lua_State *L, ErrMsg em, ...)
 {
   const char *msg;
   va_list argp;

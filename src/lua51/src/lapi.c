@@ -466,11 +466,7 @@ LUA_API void lua_pushinteger (lua_State *L, lua_Integer n) {
 
 LUA_API void lua_pushlstring (lua_State *L, const char *s, size_t len) {
   lua_lock(L);
-#ifndef DST
-    luaC_checkGC(L);
-#else
     luaC_checkGC_(L);
-#endif
   setsvalue2s(L, L->top, luaS_newlstr(L, s, len));
   api_incr_top(L);
   lua_unlock(L);
@@ -621,11 +617,7 @@ LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
 
 LUA_API void lua_createtable (lua_State *L, int narray, int nrec) {
   lua_lock(L);
-#ifndef DST
-    luaC_checkGC(L);
-#else
     luaC_checkGC_(L);
-#endif
   sethvalue(L, L->top, luaH_new(L, narray, nrec));
   api_incr_top(L);
   lua_unlock(L);

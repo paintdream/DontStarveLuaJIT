@@ -20,22 +20,31 @@
 #define PAGE_ALIGN(addr)  (unsigned char *)(((uintptr_t)(addr) + PAGE_SIZE - 1) & PAGE_MASK)
 
 const char* allFunctions[] = {
+	
+			"luaL_addlstring", "luaL_addstring", "luaL_addvalue", "luaL_argerror",
+			"luaL_buffinit", "luaL_callmeta", "luaL_checkany", "luaL_findtable", "luaL_gsub",
+			"luaL_loadbuffer", "luaL_loadfile", "luaL_loadstring", "luaL_newmetatable",
+			"luaL_newstate", "luaL_openlib", "luaL_openlibs", "luaL_optinteger",
+			"luaL_optlstring", "luaL_optnumber", "luaL_prepbuffer", "luaL_pushresult",
+			"luaL_ref", "luaL_register", "luaL_unref", "luaL_where",
+			 "lua_equal", "lua_getallocf", "lua_getupvalue",
+			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", 
 	"luaL_checktype", "luaL_error", "luaL_typerror", "lua_atpanic",
-	"lua_call", "lua_checkstack", "lua_close", "lua_concat",
-	"lua_createtable", "lua_dump", "lua_error", "lua_gc",
+	"lua_call", "lua_checkstack", "lua_close",
+	"lua_pushlstring", "lua_dump", "lua_error", "lua_gc",
 	"lua_getfenv", "lua_getfield", "lua_getinfo", "lua_getlocal",
 	"lua_getmetatable", "lua_getstack", "lua_gettable", "lua_gettop",
 	"lua_insert", "lua_iscfunction", "lua_isnumber", "lua_isstring",
 	"lua_lessthan", "lua_load", "lua_newstate", "lua_newthread",
 	"lua_newuserdata", "lua_next", "lua_objlen", "lua_pcall",
 	"lua_pushboolean", "lua_pushcclosure", "lua_pushfstring", "lua_pushinteger",
-	"lua_pushlightuserdata", "lua_pushlstring", "lua_pushnil", "lua_pushnumber",
+	"lua_pushlightuserdata", "lua_createtable", "lua_pushnil", "lua_pushnumber",
 	"lua_pushstring", "lua_pushthread", "lua_pushvalue", "lua_rawequal",
 	"lua_rawget", "lua_rawgeti", "lua_rawset", "lua_rawseti",
 	"lua_remove", "lua_replace", "lua_resume", "lua_setfenv",
 	"lua_setfield", "lua_sethook", "lua_setlocal", "lua_setmetatable",
 	"lua_settable", "lua_settop", "lua_toboolean", "lua_tocfunction",
-	"lua_tointeger", "lua_tolstring", "lua_tonumber", "lua_topointer",
+	"lua_tointeger", "lua_tolstring", "lua_tonumber", 
 	"lua_tothread", "lua_touserdata", "lua_type", "lua_typename",
 	"lua_xmove", "lua_yield", "luaopen_base", "luaopen_debug",
 	"luaopen_io", "luaopen_math", "luaopen_os", "luaopen_package",
@@ -156,7 +165,12 @@ public:
 		std::set<Entry> toEntries, entries;
 		GetEntries(refer, entries);
 		GetEntries(to, toEntries);
-
+		/*
+		uint8_t* h = (uint8_t*)0x8193090;
+		mprotect((void*)0x8193000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+		*h = 0xc3;
+		mprotect((void*)0x8193000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+		*/
 		std::unordered_map<std::string, uint8_t*> mapAddress;
 		for (std::set<Entry>::iterator it = toEntries.begin(); it != toEntries.end(); ++it) {
 			mapAddress[(*it).name] = (*it).address;
@@ -202,6 +216,8 @@ public:
 					uint8_t* best = NULL;
 					for (uint8_t* p = start + 0x300000; p < end; p += PROC_ALIGN) {
 						if (*(p - 1) != 0xC3 && *(p - 1) != 0x90) continue;
+
+						if (marked.count(p)) continue;
 						// find nearest
 						uint8_t* left = p;
 						Entry entry = ParseEntry(q->name, left);
@@ -263,17 +279,8 @@ public:
 		printf("LuaJIT handle: %p\n", to);
 
 		const char* funcs[] = {
-			"luaL_addlstring", "luaL_addstring", "luaL_addvalue", "luaL_argerror",
-			"luaL_buffinit", "luaL_callmeta", "luaL_checkany", "luaL_checkinteger",
-			"luaL_checklstring", "luaL_checknumber", "luaL_checkoption", "luaL_checkstack",
-			"luaL_checkudata", "luaL_findtable", "luaL_getmetafield", "luaL_gsub",
-			"luaL_loadbuffer", "luaL_loadfile", "luaL_loadstring", "luaL_newmetatable",
-			"luaL_newstate", "luaL_openlib", "luaL_openlibs", "luaL_optinteger",
-			"luaL_optlstring", "luaL_optnumber", "luaL_prepbuffer", "luaL_pushresult",
-			"luaL_ref", "luaL_register", "luaL_unref", "luaL_where",
-			"lua_cpcall", "lua_equal", "lua_getallocf", "lua_gethook",
-			"lua_gethookcount", "lua_gethookmask", "lua_getupvalue", "lua_isuserdata",
-			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "lua_status", "lua_topointer"
+			"luaL_loadfile", "luaL_newstate", "lua_getallocf", "lua_pushvfstring",
+			"lua_insert",
 		};
 
 		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
