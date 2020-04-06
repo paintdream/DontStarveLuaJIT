@@ -45,7 +45,7 @@ const char* allFunctions[] = {
 
 class Bridge {
 public:
-	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 24, MAX_SINGLE_INSTR_LENGTH = 24 };
+	enum { PROC_ALIGN = 16, INSTR_SIZE = 64, INSTR_MATCH_COUNT = 12, MAX_SINGLE_INSTR_LENGTH = 24 };
 	struct Entry {
 		bool operator < (const Entry& rhs) const {
 			return instr < rhs.instr;
@@ -74,22 +74,25 @@ public:
 			if (len == 0)
 				break;
 	
-			if (instr.opcode == 0x68 || instr.addrsize == 4) {
+			if (instr.opcode == 0x68 || instr.opcode == 0xc7 || instr.addrsize == 4) {
 				// read memory data
-				void* addr = instr.opcode == 0x68 ? *(void**)(address + 1) : (void*)instr.addr_l[0];
-				char buf[16];
-				memset(buf, 0, sizeof(buf));
-	
-				uint8_t temp[16];
-				if (instr.opcode == 0x68) {
-					memcpy(temp, address, instr.len);
-					*(void**)(temp + 1) = *(void**)buf;
+				int offset = instr.opcode == 0xe8 || instr.opcode == 0xe9 ? 1 : instr.opcode == 0x68 ? 1 : instr.opcode == 0xc7 && *(address + 1) == 0x44 && *(address + 2) == 0x24 ? 4 : 0;
+				void* addr = instr.opcode == 0xe8 || instr.opcode == 0xe9 ? address + 5 + *(size_t*)(address + 1) : offset != 0 ? *(void**)(address + offset) : (void*)instr.addr_l[0];
+				if (write(nullfd, addr, 4) >= 0)
+				{
+					if (offset == 0) {
+						uint8_t temp[16];
+						instr.addr_l[0] = *(long*)addr;
+						xde_asm(temp, &instr);
+
+						memcpy(target, temp, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
+					} else {
+						memcpy(target, address, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
+						memcpy(target + offset, addr, 4);
+					}
 				} else {
-					instr.addr_l[0] = *(long*)buf;
-	
-					xde_asm(temp, &instr);
+					memcpy(target, address, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
 				}
-				memcpy(target, temp, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
 			} else {
 				memcpy(target, address, len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len);
 			}
@@ -100,7 +103,7 @@ public:
 				validLength += len + target > entry.instr + INSTR_SIZE ? entry.instr + INSTR_SIZE - target : len;
 			entry.lengthHist[len]++;
 	
-			if (*address == 0xCC) {
+			if (*address == 0xC3) {
 				edge = true;
 			}
 		}
@@ -160,7 +163,7 @@ public:
 			// printf("Function Refs (%s)\n", (*it).name.c_str());
 		}
 
-		std::set<uint8_t*> marked;
+		std::unordered_set<uint8_t*> marked;
 		std::unordered_map<void*, std::list<Entry> > mapEntries;
 		uint8_t* addrMin = (uint8_t*)0xFFFFFFFF;
 		uint8_t* addrMax = (uint8_t*)0x0;
@@ -191,46 +194,46 @@ public:
 		printf("Address range %p - %p\n", start, end);
 		if (start < end) {
 			for (std::set<Entry>::iterator q = entries.begin(); q != entries.end(); ++q) {
+				// bool isCheck = (*q).name == "luaopen_debug";
 				uint8_t* address = mapAddress[(*q).name];
-				if (address != NULL && (*q).validLength > 12) {
+				if (address != NULL && (*q).validLength > INSTR_MATCH_COUNT) {
 					int maxCount = 0;
 					int maxTotalCount = 0;
 					uint8_t* best = NULL;
-					for (uint8_t* p = start; p < end; p += PROC_ALIGN) {
+					for (uint8_t* p = start + 0x300000; p < end; p += PROC_ALIGN) {
+						if (*(p - 1) != 0xC3 && *(p - 1) != 0x90) continue;
 						// find nearest
 						uint8_t* left = p;
 						Entry entry = ParseEntry(q->name, left);
 
-						int count = CommonLength(entry.instr, entry.validLength, (*q).instr, (*q).validLength);
+						int count = CommonLength(entry.instr, entry.validLength, (*q).instr, std::min((*q).validLength, entry.validLength));
+						/*
+						if (isCheck && (size_t)p == 0x8399850) {
+						}*/
 
 						if (count > maxCount) {
 							maxCount = count;
-							maxTotalCount = CommonLength(entry.instr, INSTR_SIZE, (*q).instr, INSTR_SIZE);
+							maxTotalCount = maxCount;
 							best = p;
-						} else if (count == maxCount) {
-							int total = CommonLength(entry.instr, INSTR_SIZE, (*q).instr, INSTR_SIZE);
-							if (total >= maxTotalCount) {
-								best = p;
-								maxTotalCount = total;
-							}
 						}
 					}
 
-					if (best != nullptr && maxTotalCount > INSTR_MATCH_COUNT) {
+					if (best != nullptr && maxTotalCount >= INSTR_MATCH_COUNT) {
 						if (marked.count(best) != 0) {
 							printf("ADDR %p Already registered. Please report this bug to me.\n", best);
 						} else {
 							//	Hook(best, address);
+							marked.insert(best);
 							hookList.push_back(std::make_pair(best, address));
 						}
 						// Hook(best, address);
-						printf("[%p] [%d/%d] - Hooked function (%p) to (%p) %s\n", best, maxTotalCount, INSTR_SIZE, best, address, (*q).name.c_str());
+						printf("[%p] (%0.2f%%) [%d/%d] - Hooked function (%p) to (%p) %s\n", best, (float)maxTotalCount * 100 / (*q).validLength, maxTotalCount, (*q).validLength, best, address, (*q).name.c_str());
 
 						addrMax = best > addrMax ? best : addrMax;
 						addrMin = best < addrMin ? best : addrMin;
 
 					} else {
-						printf("[%p] [%d/%d] - Missing function (%p) to (%p) %s\n", best, maxTotalCount, INSTR_SIZE, best, address, (*q).name.c_str());
+						printf("[%p] (%0.2f%%) [%d/%d] - Missing function (%p) to (%p) %s\n", best, (float)maxTotalCount * 100 / (*q).validLength, maxTotalCount, (*q).validLength, best, address, (*q).name.c_str());
 						// Dump
 						/*
 						printf("Template: \n");
@@ -239,14 +242,13 @@ public:
 						DumpHex(best, INSTR_SIZE);
 						*/
 					}
-					marked.insert(best);
 				} else {
 					printf("Entry: %s Missing!\n", (*q).name.c_str());
 				}		
 			}
 
 			for (std::vector<std::pair<uint8_t*, uint8_t*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
-				// Hook((*x).first, (*x).second);
+				Hook((*x).first, (*x).second);
 			}
 		}
 	}
@@ -254,8 +256,8 @@ public:
     Bridge() {
 		printf("DontStarveLuajit initialized!\n");
 		from = dlopen(nullptr, RTLD_GLOBAL);
-		refer = dlopen("liblua51DS.so", RTLD_GLOBAL | RTLD_NOW);
 		to = dlopen("liblua51.so", RTLD_GLOBAL | RTLD_NOW);
+		refer = dlopen("liblua51DS.so", RTLD_GLOBAL | RTLD_NOW);
 		printf("Main handle: %p\n", from);
 		printf("Lua51 handle: %p\n", refer);
 		printf("LuaJIT handle: %p\n", to);
@@ -271,18 +273,22 @@ public:
 			"luaL_ref", "luaL_register", "luaL_unref", "luaL_where",
 			"lua_cpcall", "lua_equal", "lua_getallocf", "lua_gethook",
 			"lua_gethookcount", "lua_gethookmask", "lua_getupvalue", "lua_isuserdata",
-			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "lua_status",
+			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "lua_status", "lua_topointer"
 		};
 
 		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
 			missingFuncs.insert(funcs[i]);
 		}
 
+		nullfd = open("/dev/random", O_WRONLY);
 		RedirectLuaProviderEntries();
+		dlclose(refer);
+		close(nullfd);
     }
 
 	std::unordered_set<std::string> missingFuncs;
 	void* from;
 	void* to;
 	void* refer;
+	int nullfd;
 } theBridge;
