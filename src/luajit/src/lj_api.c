@@ -1072,7 +1072,6 @@ static TValue *cpcall(lua_State *L, lua_CFunction func, void *ud)
 
 LUA_API int lua_cpcall(lua_State *L, lua_CFunction func, void *ud)
 {
-  printf("Call function %p, %p, %p\n", L, func, ud);
   global_State *g = G(L);
   uint8_t oldh = hook_save(g);
   int status;
@@ -1211,4 +1210,3 @@ LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud)
   g->allocd = ud;
   g->allocf = f;
 }
-
