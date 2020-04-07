@@ -27,6 +27,14 @@ All technique detils available at: https://zhuanlan.zhihu.com/p/24570361 (Chines
 	
 	export LD_PRELOAD=libpreload.so
 
+	NOTICE: libpreload.so/liblua51.so/liblua51DS.so may rely on some C-runtime libraries, which are not present on your computer.
+	Installing gcc:i386 may be help. For example, you can run this command in Ubuntu/Debian:
+
+	注意，由于Linux平台的特殊性，发行包中提供的libpreload.so、liblua51.so、liblua51DS.so可能无法直接在您的计算机上执行。
+	如果您遇到安装失败，则一般是由于liblua51DS.so的依赖没有安装导致的。您可以简单地安装gcc:i386这个包来解决这个问题，以Ubuntu/Debian为例：
+
+	sudo apt-get install gcc:i386
+
 ## Compilation（编译）: 
 
 	The following part is for developers only.
