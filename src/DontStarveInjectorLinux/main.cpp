@@ -165,10 +165,11 @@ public:
 		std::set<Entry> toEntries, entries;
 		GetEntries(refer, entries);
 		GetEntries(to, toEntries);
+		/*
 		uint8_t* h = (uint8_t*)0x8383C10; // index2addr, should not be called any more
 		mprotect((void*)0x8383000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
 		*h = 0xcc;
-		mprotect((void*)0x8383000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+		mprotect((void*)0x8383000, PAGE_SIZE * 2, PROT_READ | PROT_WRITE | PROT_EXEC);*/
 		std::unordered_map<std::string, uint8_t*> mapAddress;
 		for (std::set<Entry>::iterator it = toEntries.begin(); it != toEntries.end(); ++it) {
 			mapAddress[(*it).name] = (*it).address;
@@ -279,23 +280,27 @@ public:
 		from = dlopen(nullptr, RTLD_GLOBAL);
 		to = dlopen("liblua51.so", RTLD_GLOBAL | RTLD_NOW);
 		refer = dlopen("liblua51DS.so", RTLD_GLOBAL | RTLD_NOW);
-		printf("Main handle: %p\n", from);
-		printf("Lua51 handle: %p\n", refer);
-		printf("LuaJIT handle: %p\n", to);
+		if (refer == nullptr || to == nullptr) {
+			printf("Unable to load liblua51DS.so or liblua51.so, sudo apt-get install gcc:i386 may help.\n");
+		} else {
+			printf("Main handle: %p\n", from);
+			printf("Lua51 handle: %p\n", refer);
+			printf("LuaJIT handle: %p\n", to);
 
-		const char* funcs[] = {
-			"luaL_loadfile", "luaL_newstate", "luaL_optinteger",
-			"luaL_optlstring", "luaL_optnumber", 
-		};
+			const char* funcs[] = {
+				"luaL_loadfile", "luaL_newstate", "luaL_optinteger",
+				"luaL_optlstring", "luaL_optnumber", 
+			};
 
-		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
-			missingFuncs.insert(funcs[i]);
+			for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
+				missingFuncs.insert(funcs[i]);
+			}
+
+			nullfd = open("/dev/random", O_WRONLY);
+			RedirectLuaProviderEntries();
+			close(nullfd);
+			dlclose(refer);
 		}
-
-		nullfd = open("/dev/random", O_WRONLY);
-		RedirectLuaProviderEntries();
-		dlclose(refer);
-		close(nullfd);
     }
 
 	std::unordered_set<std::string> missingFuncs;
