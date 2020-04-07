@@ -196,7 +196,7 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   StkId p;
   StkId q;
   lua_lock(L);
-#ifdef __GNU_C__
+#ifdef __GNUC__
   luaC_checkGC_(L);
 #endif
   p = index2adr(L, idx);
@@ -425,7 +425,7 @@ LUA_API const void *lua_topointer (lua_State *L, int idx) {
     case LUA_TTHREAD: return thvalue(o);
     case LUA_TUSERDATA:
     case LUA_TLIGHTUSERDATA:
-#ifdef __GNU_C__
+#ifdef __GNUC__
       return lua_touserdata(L, idx);
 #else
       return lua_touserdata_(L, idx);
@@ -498,7 +498,7 @@ LUA_API void lua_pushstring (lua_State *L, const char *s) {
 }
 
 
-#ifndef __GNU_C__
+#ifndef __GNUC__
 LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
                                       va_list argp) {
   const char *ret;
