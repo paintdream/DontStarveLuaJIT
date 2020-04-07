@@ -1,4 +1,4 @@
-# DontStarveLuaJIT for Windows
+# DontStarveLuaJIT
 	LuaJIT for DontStarve (compatible with DS, RoG, SW, DST for Windows, Dedicated Server for Linux)
 
 ####  PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH. 
@@ -34,6 +34,13 @@ All technique detils available at: https://zhuanlan.zhihu.com/p/24570361 (Chines
 	如果您遇到安装失败，则一般是由于liblua51DS.so的依赖没有安装导致的。您可以使用ldd命令来查看缺少哪些依赖并安装它们，比如：
 
 	ldd liblua51DS.so
+	
+	For example, if 'readline' was reported missing, then you could have it installed by following instructions(Debian/Ubuntu):
+	
+	比如提示readline找不到，那么就使用如下命令安装(Debian/Ubuntu)：
+	
+	sudo apt-get install lib32readline6
+	
 
 ## Compilation（编译）: 
 
