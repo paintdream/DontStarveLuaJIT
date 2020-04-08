@@ -822,7 +822,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD ul_reason_for_call, LPVOID reserv
 			"luaL_ref", "luaL_register", "luaL_unref", "luaL_where",
 			"lua_cpcall", "lua_equal", "lua_getallocf", "lua_gethook",
 			"lua_gethookcount", "lua_gethookmask", "lua_getupvalue", "lua_isuserdata",
-			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "lua_status",
+			"lua_pushvfstring", "lua_setallocf", "lua_setupvalue", "lua_status", "luaopen_io"
 		};
 
 		for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
