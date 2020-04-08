@@ -281,7 +281,8 @@ public:
 		to = dlopen("liblua51.so", RTLD_GLOBAL | RTLD_NOW);
 		refer = dlopen("liblua51DS.so", RTLD_GLOBAL | RTLD_NOW);
 		if (refer == nullptr || to == nullptr) {
-			printf("Unable to load liblua51DS.so or liblua51.so, sudo apt-get install gcc:i386 may help.\n");
+			printf("Unable to load liblua51DS.so, `sudo apt-get install gcc:i386 lib32readline6` may help.\n");
+			printf("If error still occurs, try to use `ldd liblua51DS.so` to find and install missing libs.\n");
 		} else {
 			printf("Main handle: %p\n", from);
 			printf("Lua51 handle: %p\n", refer);
