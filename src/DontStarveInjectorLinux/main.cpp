@@ -290,7 +290,7 @@ public:
 
 			const char* funcs[] = {
 				"luaL_loadfile", "luaL_newstate", "luaL_optinteger",
-				"luaL_optlstring", "luaL_optnumber", 
+				"luaL_optlstring", "luaL_optnumber", "luaopen_io", 
 			};
 
 			for (size_t i = 0; i < sizeof(funcs) / sizeof(funcs[0]); i++) {
