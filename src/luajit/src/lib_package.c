@@ -466,6 +466,7 @@ end \n\
     return newTable \n\
   end \n\
   setmetatable(_G, nil) \n\
+  collectgarbage = function () end \n\
 ");
 	lua_call(L, 0, 0);
   }
