@@ -19,70 +19,68 @@
     </section>
 
     <section class="main-content">
-      <h1>
-<a id="dontstarveluajit-for-windows" class="anchor" href="#dontstarveluajit-for-windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DontStarveLuaJIT for Windows</h1>
-
-<pre><code>LuaJIT for DontStarve (compatible with DS, RoG, SW, DST)
-
-Tested revisions（已测试版本）:  DS v181038-v193328 WIN32_STEAM | DST v147xxx-v193193 WIN32_STEAM
+      <h1>DontStarveLuaJIT</h1>
+<pre><code>LuaJIT for DontStarve (compatible with DS, RoG, SW, DST for Windows, Dedicated Server for Linux)
 </code></pre>
-
-<h4>
-<a id="the-first-test-version-of-dontstarveluajit-for-windows" class="anchor" href="#the-first-test-version-of-dontstarveluajit-for-windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The first test version of DontStarveLuaJIT for Windows</h4>
-
-<h4>
-<a id="这是dontstarveluajit-for-windows-的第一个测试版本" class="anchor" href="#%E8%BF%99%E6%98%AFdontstarveluajit-for-windows-%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95%E7%89%88%E6%9C%AC" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>这是DontStarveLuaJIT For Windows 的第一个测试版本！</h4>
-
-<h4>
-<a id="please-backup-your-saves-before-applying-this-patch" class="anchor" href="#please-backup-your-saves-before-applying-this-patch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH.</h4>
-
-<h4>
-<a id="在启用这个补丁之前请务必备份你的所有存档" class="anchor" href="#%E5%9C%A8%E5%90%AF%E7%94%A8%E8%BF%99%E4%B8%AA%E8%A1%A5%E4%B8%81%E4%B9%8B%E5%89%8D%E8%AF%B7%E5%8A%A1%E5%BF%85%E5%A4%87%E4%BB%BD%E4%BD%A0%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%98%E6%A1%A3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>在启用这个补丁之前，请务必备份你的所有存档。</h4>
-
+<h4>PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH.</h4>
+<h4>在启用这个补丁之前，请务必备份你的所有存档。</h4>
+<p>All technique detils available at: <a href="https://zhuanlan.zhihu.com/p/24570361" rel="nofollow">https://zhuanlan.zhihu.com/p/24570361</a> (Chinese only).</p>
+<p>我把<a href="https://zhuanlan.zhihu.com/p/24570361" rel="nofollow">本文所有技术细节、原理</a>发在了知乎专栏上，如果对项目有疑问可以先看看文章。</p>
 <hr>
+<h2>Installation（安装）:</h2>
+<h3>Windows</h3>
+<pre><code>Copy all files from folder "win" to "[Your Don't Starve [Together] Directory]/bin/"
 
-
-
-<h2>
-<a id="installation安装" class="anchor" href="#installation%E5%AE%89%E8%A3%85" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation（安装）:</h2>
-
-<h5>
-<a id="step-1" class="anchor" href="#step-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1:</h5>
-
-<pre><code>Copy all files from "DontStarveLuaJIT/bin/" to "[Your Don't Starve Directory]/bin/"
-
-复制"DontStarveLuaJIT/bin/"目录下的所有文件至"[您的Don't Starve安装目录]/bin/"
+复制发布包"win"目录下的所有文件至"[您的Don't Starve [Together] 安装目录]/bin/"
 </code></pre>
+<h3>Linux</h3>
+<pre><code>    Copy all files from folder "linux" to "[Your Don't Starve [Together] Directory]/bin/lib32/", start game with the following environment setting:
 
+复制发布包"linux"目录下的所有文件至"[您的Don't Starve [Together] 安装目录]/bin/lib32"，使用如下环境参数启动游戏：
 
-<h2>
-<a id="compilation编译" class="anchor" href="#compilation%E7%BC%96%E8%AF%91" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compilation（编译）:</h2>
+export LD_PRELOAD=libpreload.so
 
+NOTICE: libpreload.so/liblua51.so/liblua51DS.so may rely on some C-runtime libraries, which are not present on your computer.
+Try to use ldd to find dependencies and install them.
+
+注意，由于Linux平台的特殊性，发行包中提供的libpreload.so、liblua51.so、liblua51DS.so可能无法直接在您的计算机上执行。
+如果您遇到安装失败，则一般是由于liblua51DS.so的依赖没有安装导致的。您可以使用ldd命令来查看缺少哪些依赖并安装它们，比如：
+
+ldd liblua51DS.so
+
+For example, if 'readline' was reported missing, then you could have it installed by following instructions(Debian/Ubuntu):
+
+比如提示readline找不到，那么就使用如下命令安装(Debian/Ubuntu)：
+
+sudo apt-get install lib32readline6
+</code></pre>
+<h2>Compilation（编译）:</h2>
 <pre><code>The following part is for developers only.
-普通玩家止步。这部分内容是给开发者看的。
 
-The project 'lua51' in solution must be compiled under MSVC9 (Visual Studio 2008) to generate 
+**普通玩家止步。这部分内容是给开发者看的。**
+</code></pre>
+<h3>Windows</h3>
+<pre><code>For Windows version, the project 'lua51' in solution must be compiled with MSVC9 (Visual Studio 2008) to generate 
 binary-compatible code for dontstarve_steam.exe. To compile luajit, please launch Visual C++ 
 Build Prompt and run msvcbuild.bat.
 
-为确保与饥荒主程序的二进制兼容性，解决方案中的lua51必须使用MSVC9（即VS2008）来编译。
+对于Windows版本，为确保与饥荒主程序的二进制兼容性，解决方案中的lua51必须使用MSVC9（即VS2008）来编译。
+
 如果您要自行编译luajit，请在Visual C++的控制台中运行luajit目录下的msvcbuild.bat。
-
-lua51.dll for DST is build from 'lua51' project with predefined macro 'DST'.
-
-向工程lua51添加前置宏定义'DST'可以编译出针对DST版本的lua51.dll。
 </code></pre>
+<h3>Linux</h3>
+<pre><code>For linux version, the project 'lua51' must be compiled with GCC 4.8.4:i386, which is builtin compiler tool of Ubuntu 14.04 LTS.
 
-<h2>
-<a id="acknowledgements致谢" class="anchor" href="#acknowledgements%E8%87%B4%E8%B0%A2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Acknowledgements（致谢）:</h2>
-
+对于Linux版本，lua51工程需要使用GCC 4.8.4:i386编译。您可以安装Ubuntu 14.04 LTS版本，使用自带的GCC即可。
+</code></pre>
+<h2>Acknowledgements（致谢）:</h2>
 <pre><code>Great thanks to the following players from Baidu Tieba for testing and suggestions!
 
 感谢百度贴吧以下吧友对于MOD的测试和建议！
 
 风雨凌芸、子恒Clark、359368170、lild100、kkrbdsgc、__PeakChen、o裙下臣o、 LC_1992、
 pikry、沉睡森丶林、可待year、绝世鱼人、王太太平、力玄破、渊_雎、风雪归途、幻想草莓梦、
-sharpwind95
+sharpwind95、乔碧萝、辣椒小皇纸
 </code></pre>
 
       <footer class="site-footer">
