@@ -617,6 +617,8 @@ static Entry ParseEntry(const std::string& name, const BYTE* c) {
 
 			BYTE temp[16];
 			if (instr.opcode == 0x68) {
+				DWORD dwRead;
+				::ReadProcessMemory(GetCurrentProcess(), addr, buf, 4, &dwRead);
 				memcpy(temp, c, instr.len);
 				*(PVOID*)(temp + 1) = *(PVOID*)buf;
 			} else {
