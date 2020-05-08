@@ -5,7 +5,7 @@
 
 ####  在启用这个补丁之前，请务必备份你的所有存档。
 
-All technique detils available at: https://zhuanlan.zhihu.com/p/24570361 (Chinese only).
+All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chinese only).
 
 我把[本文所有技术细节、原理](https://zhuanlan.zhihu.com/p/24570361)发在了知乎专栏上，如果对项目有疑问可以先看看文章。
 
