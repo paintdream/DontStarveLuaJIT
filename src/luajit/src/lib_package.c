@@ -465,8 +465,19 @@ end \n\
 	newTable[size] = tab[size] \n\
     return newTable \n\
   end \n\
-  setmetatable(_G, nil) \n\
   collectgarbage = function () end \n\
+  _loadlua = kleiloadlua \n\
+  kleiloadlua = function (name, ...) \n\
+    if type(name) == 'string' and name:find('fnhider') then \n\
+      local f = io.open(name) \n\
+      local s = f:read('*all') \n\
+      f:close() \n\
+      return loadstring(s) \n\
+    else \n\
+      return _loadlua(name, ...) \n\
+    end \n\
+  end \n\
+  \n\
 ");
 	lua_call(L, 0, 0);
   }
