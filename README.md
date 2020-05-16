@@ -21,7 +21,7 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	
 ### Linux
 
-        Copy all files from folder "linux" to "[Your Don't Starve [Together] Directory]/bin/lib32/", start game with the following environment setting:
+	Copy all files from folder "linux" to "[Your Don't Starve [Together] Directory]/bin/lib32/", start game with the following environment setting:
 	
 	复制发布包"linux"目录下的所有文件至"[您的Don't Starve [Together] 安装目录]/bin/lib32"，使用如下环境参数启动游戏：
 	
@@ -72,5 +72,29 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	
 	风雨凌芸、子恒Clark、359368170、lild100、kkrbdsgc、__PeakChen、o裙下臣o、 LC_1992、
 	pikry、沉睡森丶林、可待year、绝世鱼人、王太太平、力玄破、渊_雎、风雪归途、幻想草莓梦、
-	sharpwind95、乔碧萝、辣椒小皇纸
+	sharpwind95、乔碧萝、辣椒小皇纸、☆风铃草☆
 	
+
+## TO MOD DEVELOPERS（对于MOD开发者）：
+
+	由于LuaJIT的debug函数库与Lua的行为有所不同，因此一些依赖debug库的mod可能无法正确运行。
+
+	由于部分debug函数在涉及函数层次的时候，LuaJIT的实现不会记入尾调用所在函数的层次，因而与原版Lua出现偏差。由于GemCore用途较广，因而特此在GemCore加载时做了特殊处理，使得它可以正确运行。
+
+	luajit不会记录每一个栈帧上尾调用的次数，因而完美的解决方案比较困难。对于其他使用了debug库的mod而言，建议MOD作者不要使用尾调用来调用debug库的函数，例如如下代码：
+
+	function a(option)
+
+		return debug.getinfo(1, "option")
+
+	end
+
+	建议在调用时对返回值序列加一个nil来避免luajit走入尾调用的逻辑：
+
+	function a(option)
+
+		return debug.getinfo(1, "option"), nil
+		
+	end
+
+	特别感谢☆风铃草☆帮助查找和定位本问题~
