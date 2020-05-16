@@ -159,11 +159,11 @@ char* hack_gemcore(const char* base, size_t size)
         continue;
       }
 
-      s = strstr(p, "\r\nend");
+      s = strstr(p, "end");
       if (s != NULL) {
         memcpy(q, p, s - p); q += s - p;
-        memcpy(q, ", nil\r\nend", 10); q += 10;
-        t = s + 5;
+        memcpy(q, ", nil end", 9); q += 9;
+        t = s + 3;
       } else {
         break;
       }
