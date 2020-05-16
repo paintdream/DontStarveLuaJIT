@@ -152,11 +152,17 @@ char* hack_gemcore(const char* base, size_t size)
       ) {
       memcpy(q, t, p - t);
       q += p - t;
+      if (memcmp(p, "return _debug_getupvalue", 24) == 0) {
+        memcpy(q, p, 24);
+        t = p + 24;
+        q += 24;
+        continue;
+      }
 
       s = strstr(p, "\r\nend");
       if (s != NULL) {
         memcpy(q, p, s - p); q += s - p;
-        memcpy(q, ",nil,0\r\nend", 11); q += 11;
+        memcpy(q, ", nil\r\nend", 10); q += 10;
         t = s + 5;
       } else {
         break;
@@ -165,10 +171,10 @@ char* hack_gemcore(const char* base, size_t size)
 
     if (s != NULL)
     {
-      //FILE* fp = fopen("hahaha.txt", "wb");
+      // FILE* fp = fopen("hahaha.txt", "wb");
       memcpy(q, t, base + size - t);
-      //fwrite(target, 1, (q - target) + (base - t) + size, fp);
-      //fclose(fp);
+      // fwrite(target, 1, (q - target) + (base - t) + size, fp);
+      // fclose(fp);
       return target;
     }
     
