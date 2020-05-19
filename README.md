@@ -19,6 +19,18 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 
 	复制发布包"win"目录下的所有文件至"[您的Don't Starve [Together] 安装目录]/bin/"
 	
+	
+	Launch the game, press ` and type:
+	
+	启动游戏，按`打开控制台，输入：
+	
+	print(_VERSION)
+	
+	And you can see message started with "LuaJIT".
+	
+	你可以看到LuaJIT字样的输出，这就说明已经安装成功。
+	
+	
 ### Linux
 
 	Copy all files from folder "linux" to "[Your Don't Starve [Together] Directory]/bin/lib32/", start game with the following environment setting:
