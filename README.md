@@ -11,7 +11,7 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 
 -------------------------------------------------------
 
-## Installation（安装）: 
+## Installation/Uninstallation（安装）: 
 
 ### Windows
 
@@ -29,6 +29,10 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	And you can see message started with "LuaJIT".
 	
 	你可以看到LuaJIT字样的输出，这就说明已经安装成功。
+
+	If you want uninstall this patch, just remove these copied files (i.e. WINMM.DLL, lua51.dll, lua51DS.dll) from the bin folder.
+
+	如果需要卸载本Patch，只需要删掉您这些新复制的文件（WINMM.DLL, lua51.DLL, lua51DS.dll）即可。
 	
 	
 ### Linux

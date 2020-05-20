@@ -724,6 +724,7 @@ void Redirect(HMODULE from, HMODULE to) {
 		BYTE* addrMax = (BYTE*)0x0;
 
 		std::vector<std::pair<BYTE*, BYTE*> > hookList;
+		bool success = true;
 		for (std::set<Entry>::iterator q = entries.begin(); q != entries.end(); ++q) {
 			BYTE* address = mapAddress[(*q).name];
 			if (address != NULL && (*q).validLength > 12) {
@@ -754,6 +755,7 @@ void Redirect(HMODULE from, HMODULE to) {
 
 				if (best != NULL && maxTotalCount > INSTR_MATCH_COUNT) {
 					if (marked.count(best) != NULL) {
+						success = false;
 						printf("ADDR %p Already registered. Please report this bug to me.\n", best);
 					} else {
 						//	Hook(best, address);
@@ -766,6 +768,7 @@ void Redirect(HMODULE from, HMODULE to) {
 					addrMin = best < addrMin ? best : addrMin;
 
 				} else {
+					success = false;
 					printf("[%p] [%d/%d] - Missing function (%p) to (%p) %s\n", best - (BYTE*)from - header->OptionalHeader.BaseOfCode, maxTotalCount, INSTR_SIZE, best, address, (*q).name.c_str());
 					// Dump
 					/*
@@ -781,11 +784,16 @@ void Redirect(HMODULE from, HMODULE to) {
 			}
 		}
 
-		for (std::vector<std::pair<BYTE*, BYTE*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
-			Hook((*x).first, (*x).second);
-		}
-
 		printf("VALID RANGE: [%p] - [%p]\n", addrMin - ((BYTE*)from + header->OptionalHeader.BaseOfCode), addrMax - ((BYTE*)from + header->OptionalHeader.BaseOfCode));
+
+		if (success) {
+			for (std::vector<std::pair<BYTE*, BYTE*> >::const_iterator x = hookList.begin(); x != hookList.end(); ++x) {
+				Hook((*x).first, (*x).second);
+			}
+			printf("Installation complete.\n");
+		} else {
+			printf("Installation failed, please report bug to me.\n");
+		}
 	} else {
 		for (std::set<Entry>::iterator p = fromEntries.begin(); p != fromEntries.end(); ++p) {
 			const std::string& name = (*p).name;
