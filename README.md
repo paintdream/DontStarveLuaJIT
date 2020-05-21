@@ -49,12 +49,6 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	比如提示readline找不到，那么就使用如下命令安装(Debian/Ubuntu)：
 	
 	sudo apt-get install lib32readline6
-	
-	If your system are suggrested to install newer version of lib32realine, e.g. lib32readline8. Making a soft link of it to could work.
-	如果您的系统比较新（如Debian buster），可能只能安装高版本的lib32readline8，您可以制作一个软链接到lib32readline6来使用。
-	
-	ln -s /lib32/libreadline.so.8 /lib32/libreadline.so.6
-	
 
 ## Compilation（编译）: 
 
@@ -81,7 +75,7 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	
 	风雨凌芸、子恒Clark、359368170、lild100、kkrbdsgc、__PeakChen、o裙下臣o、 LC_1992、
 	pikry、沉睡森丶林、可待year、绝世鱼人、王太太平、力玄破、渊_雎、风雪归途、幻想草莓梦、
-	sharpwind95、乔碧萝、辣椒小皇纸、☆风铃草☆
+	sharpwind95、乔碧萝、辣椒小皇纸、☆风铃草☆、hyiltiz 
 	
 
 ## TO MOD DEVELOPERS（对于MOD开发者）：
