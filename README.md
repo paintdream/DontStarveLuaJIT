@@ -100,8 +100,8 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 
 ## Acknowledgements（致谢）: 
 
-	Great thanks to the following players from Baidu Tieba for testing and suggestions!
-	感谢百度贴吧以下吧友对于MOD的测试和建议！
+	Great thanks to the following players for testing and suggestions!
+	感谢以下网友对于MOD的测试和建议！
 	
 	风雨凌芸、子恒Clark、359368170、lild100、kkrbdsgc、__PeakChen、o裙下臣o、 LC_1992、
 	pikry、沉睡森丶林、可待year、绝世鱼人、王太太平、力玄破、渊_雎、风雪归途、幻想草莓梦、
