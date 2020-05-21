@@ -69,8 +69,6 @@
 	
 	If your system are suggrested to install newer version of lib32realine, e.g. lib32readline8. Making a soft link of it to could work.
 	如果您的系统比较新（如Debian buster），可能只能安装高版本的lib32readline8，您可以制作一个软链接到lib32readline6来使用。
-	
-	ln -s /lib32/libreadline.so.8 /lib32/libreadline.so.6
 
 	For dedicated server, that's enough. But it's not work with the game client, since the game requests steam to restart it if it was not started by steam.
 	As a result, LD_PRELOAD will be missing when steam starts it. Here's a workaround from hyiltiz that works:
