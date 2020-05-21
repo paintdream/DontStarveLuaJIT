@@ -20,7 +20,7 @@
 
     <section class="main-content">
       <h1>DontStarveLuaJIT</h1>
-<pre><code>LuaJIT for DontStarve (compatible with DS, RoG, SW, DST，Dedicated Server for Windows and Linux)
+<pre><code>Don't Starve LuaJIT/OpenGL ES optimization patch (compatible with DS, RoG, SW, HAM, DST, Dedicated Server for Windows and DST, Dedicated Server for Linux)
 </code></pre>
 <h4>PLEASE BACKUP YOUR SAVES BEFORE APPLYING THIS PATCH.</h4>
 <h4>在启用这个补丁之前，请务必备份你的所有存档。</h4>
@@ -70,6 +70,31 @@ sudo apt-get install lib32readline6
 	
 If your system are suggrested to install newer version of lib32realine, e.g. lib32readline8. Making a soft link of it to could work.
 如果您的系统比较新（如Debian buster），可能只能安装高版本的lib32readline8，您可以制作一个软链接到lib32readline6来使用。
+
+For dedicated server, that's enough. But it's not work with the game client, since the game requests steam to restart it if it was not started by steam.
+As a result, LD_PRELOAD will be missing when steam starts it. Here's a workaround from hyiltiz that works:
+对于独立服务器而言，上面的步骤做完后就可以启动服务器了。但是客户端并不行，这是因为客户端会请求steam去启动它。
+这样二次启动后LD_PRELOAD参数就无效了，您可以通过以下的方案绕过它：
+
+Rename dontstarve to dontstarve.bin:
+将dontstarve程序重命名为dontstarve.bin:
+
+mv dontstarve dontstarve.bin
+
+Write a new bash with following content:
+编写一个新的脚本，内容如下，命名为dontstarve：
+	
+#!/bin/sh
+LD_PRELOAD=libpreload.so ./dontstarve_steam.bin
+
+Add executable access:
+加入执行权限：
+
+chmod +x dontstarve_steam
+
+Then enjoy your game!
+接着就可以运行游戏了！
+	
 
 </code></pre>
 <h2>Compilation（编译）:</h2>
