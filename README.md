@@ -50,7 +50,7 @@ All technique details available at: https://zhuanlan.zhihu.com/p/24570361 (Chine
 	
 	sudo apt-get install lib32readline6
 	
-	If your system are suggrested to install newer version of lib32realine, e.g. lib32readline8. Making a soft link of it to could work.
+	If your system are suggrested to install newer version of lib32realine, e.g. lib32readline8. Making a soft link of it to lib32readline6 could work.
 	如果您的系统比较新（如Debian buster），可能只能安装高版本的lib32readline8，您可以制作一个软链接到lib32readline6来使用。
 
 	For dedicated server, that's enough. But it's not work with the game client, since the game requests steam to restart it if it was not started by steam.
