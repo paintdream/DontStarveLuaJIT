@@ -5,6 +5,14 @@
 
 ###  这个补丁可以将饥荒游戏内的脚本引擎替换为LuaJIT以提升性能。在启用这个补丁之前，请务必备份你的所有存档。
 
+### After Klei being purchased by Tencent Games, this project will NOT be maintained anymore due to conflict of company interest.
+
+### 因供职公司利益冲突关系，在腾讯游戏收购Klei之后，作者将不再更新此项目。
+
+### After Klei redistribute Don't Starve Together with 64 bit revision, this patch is NO LONGER APPLIABLE for DST.
+
+### 在Klei官方发布联机64位版本之后，此插件将无法应用于联机版本。
+
 ### Original Game 原版游戏 (FPS: 48-50)
 
 ![lua](https://user-images.githubusercontent.com/7030141/82619705-3c634980-9c09-11ea-9f0a-99b017408310.png)
